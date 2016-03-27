@@ -1,5 +1,9 @@
 package es.ucm.fdi.tp.practica5.connectn;
 
+
+
+import javax.swing.SwingUtilities;
+
 import es.ucm.fdi.tp.basecode.bgame.control.Controller;
 import es.ucm.fdi.tp.basecode.bgame.control.Player;
 import es.ucm.fdi.tp.basecode.bgame.model.GameObserver;
@@ -26,6 +30,12 @@ public class ConnectNFactoryExt extends ConnectNFactory {
 	@Override
 	public void createSwingView(final Observable<GameObserver> g, final Controller c, final Piece viewPiece,
 			Player random, Player ai) {
-		
+		SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					GameObserver o = new ConnectNSwingView(g,c,viewPiece, random, ai);
+					g.addObserver(o);
+				}
+			});
 	}
 }

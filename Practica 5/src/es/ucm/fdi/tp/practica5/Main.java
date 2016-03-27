@@ -25,6 +25,7 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 import es.ucm.fdi.tp.practica5.ataxx.AtaxxFactoryExt;
 import es.ucm.fdi.tp.practica5.attt.AdvancedTTTFactoryExt;
 import es.ucm.fdi.tp.practica5.connectn.ConnectNFactoryExt;
+import es.ucm.fdi.tp.practica5.swing.SwingControler;
 import es.ucm.fdi.tp.practica5.ttt.TicTacToeFactoryExt;
 
 /**
@@ -139,14 +140,14 @@ public class Main {
 	 * <p>
 	 * Juego por defecto.
 	 */
-	final private static GameInfo DEFAULT_GAME = GameInfo.Ataxx;
+	final private static GameInfo DEFAULT_GAME = GameInfo.CONNECTN;
 
 	/**
 	 * default view to use.
 	 * <p>
 	 * Vista por defecto.
 	 */
-	final private static ViewInfo DEFAULT_VIEW = ViewInfo.CONSOLE;
+	final private static ViewInfo DEFAULT_VIEW = ViewInfo.WINDOW;
 
 	/**
 	 * Default player mode to use.
@@ -789,10 +790,12 @@ public class Main {
 			else{
 				gameFactory.createSwingView(g, c, null, gameFactory.createRandomPlayer(), gameFactory.createAIPlayer(aiPlayerAlg));
 			}
+			c = new SwingControler(g, pieces);
+			break;
 		default:
 			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
 		}
-
+		//c
 		c.start();
 	}
 
