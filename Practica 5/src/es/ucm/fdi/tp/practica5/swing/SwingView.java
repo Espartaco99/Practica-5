@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
@@ -32,6 +33,7 @@ import es.ucm.fdi.tp.basecode.bgame.model.Game.State;
 import es.ucm.fdi.tp.basecode.bgame.model.GameObserver;
 import es.ucm.fdi.tp.basecode.bgame.model.Observable;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
+import es.ucm.fdi.tp.practica5.Main.PlayerMode;
 
 
 public abstract class SwingView extends JFrame implements GameObserver {
@@ -48,36 +50,10 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	//Manejar PlayerMode, no me gusta el enumerado
 	private Map<Piece, PlayerMode> playerTypes;
 	private String gameDesc;
+	private JPanel crtlPanel;
+	private JPanel mainPanel;
 
-	/**
-	 * Player modes (manual, random, etc.)
-	 * <p>
-	 * Modos de juego.
-	 */
-	enum PlayerMode {
-		MANUAL("m", "Manual"), RANDOM("r", "Random"), AI("a", "Automatics");
-
-		private String id;
-		private String desc;
-
-		PlayerMode(String id, String desc) {
-			this.id = id;
-			this.desc = desc;
-		}
-
-		public String getId() {
-			return id;
-		}
-
-		public String getDesc() {
-			return desc;
-		}
-
-		@Override
-		public String toString() {
-			return id;
-		}
-	}
+	
 	
 	/**
 	 * 
@@ -105,19 +81,112 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//Set the panel to be the one of the swingView
-		JPanel mainPanel = new JPanel( new BorderLayout(5,5) );
+		mainPanel = new JPanel( new BorderLayout(5,5) );
 		this.setContentPane(mainPanel);
 		
 		
-		//initBoardGui(); 
+		crtlPanel = new JPanel(); // BOXLAYOUT
+		mainPanel.add(crtlPanel, BorderLayout.LINE_END);
+		
+		//Hacer funciones para añadir cada componente, completar el codigo de estas funciones
+		addQuitRestartButtons();
+		addStatusMessages();
+		addPlayerInformation();
+		addPieceColors();
+		addPlayerModes();
+		addAutomaticMoves();
+		initBoardGui();
+		
+		/*
+		//Tabla
+		String[] columnNames = { "Player", "Mode", "#Pieces" };
+		Object[][] data = {
+				{ "X", "Manual", ""},
+				{ "O", "Inteligent", ""},
+		};
+		JTable table = new JTable(data,columnNames);
+		//Falta cambiar el color a la tabla
+		mainPanel.add(new JScrollPane(table));
+		table.setFillsViewportHeight(true);
+		*/
+		
 	}
+	private void addAutomaticMoves() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void addPlayerModes() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void addPieceColors() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void addPlayerInformation() {
+		// TODO Auto-generated method stub
+		
+	}
+	/**
+	 * Adds the TextArea (usar JTextArea) where the messages are gonna be displayed
+	 */
+	private void addStatusMessages() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void addQuitRestartButtons() {
+		JPanel p = new JPanel();
+
+		JButton quit = new JButton("Quit");
+		quit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) { quit(); }
+		});
+		//Dejar todas las funciones tal como estan
+				this.addWindowListener(new WindowListener() {
+					public void windowClosing(WindowEvent e) { quit(); }
+
+					@Override
+					public void windowActivated(WindowEvent e) {
+					}
+
+					@Override
+					public void windowClosed(WindowEvent e) {
+					}
+
+					@Override
+					public void windowDeactivated(WindowEvent e) {
+					}
+
+					@Override
+					public void windowDeiconified(WindowEvent e) {
+					}
+
+					@Override
+					public void windowIconified(WindowEvent e) {
+					}
+
+					@Override
+					public void windowOpened(WindowEvent e) {
+					}
+				
+				});
+		p.add(quit);
+		JButton restart = new JButton("Restart");
+		p.add(restart);
+		crtlPanel.add(p);
+	}
+
 	final protected Piece getTurn() { return turn; }
 	final protected Board getBoard() { return board; }
 	final protected Board getPieces() { return (Board) pieces; }
 	final protected Color getPieceColor(Piece p) { return pieceColors.get(p); }
 	final protected Color setPieceColor(Piece p, Color c) { return pieceColors.put(p,c); }
 	final protected void setBoardArea(JComponent c) { 
-		
+		mainPanel.add(c,BorderLayout.CENTER);
 	}
 	final protected void addMsg(String msg) { 
 		
@@ -158,7 +227,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		SwingUtilities.invokeLater(new Runnable() {
 			//No se que hacer con esto
 			public void run() {
-				
+
 				handleGameStart(); 
 			}
 
@@ -170,14 +239,15 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	/**
 	 * Adds the main boxes and elements in the panel previously made by initGUI
 	 */
-	//No funciona la insercion de BorderLayout.Center ni BorderLayout.Line_End
+	//Sobra todo el codigo de aqui, son funciones pequeñas de hacer
 	private void handleGameStart() {
 		JPanel visualBoard = new JPanel();
 		visualBoard.setPreferredSize(new Dimension(20,20));	
 		visualBoard.setBackground(Color.GRAY);
 		
 		this.add(visualBoard, BorderLayout.CENTER);
-		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		//Cant resize
+		//this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		
 		Border b = BorderFactory.createLineBorder(Color.black, 2);
@@ -211,53 +281,12 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		optionsPanel.add(listModes);
 		//Falta comboBox igual que listPieces
 		
-		JButton quit = new JButton("Quit");
-		quit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { quit(); }
-		});
-		optionsPanel.add(quit);
+		
+		
 		
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		this.addWindowListener(new WindowListener() {
-			public void windowClosing(WindowEvent e) { quit(); }
-
-			@Override
-			public void windowActivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowClosed(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowIconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowOpened(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
 		
-		});
+		
 		
 		this.add(optionsPanel, BorderLayout.LINE_END);
 		this.pack();
@@ -265,13 +294,28 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		
 	}
 	
-	//Hacer algo con el estado 
+	//No usar JOptionPane.showMessageDialog, meter estos mensajes en el text area de addStatusMessages()
 	public void onGameOver(final Board board, final State state, final Piece winner) {
 		this.board = board;
-		this.turn = winner;
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() { 
 				//Mostrar mensaje de victoria o empate
+				JFrame frame = new JFrame();
+				
+				//CAMBIAR
+				if (state == State.Draw){
+					JOptionPane.showMessageDialog(frame,
+							"You have draw, try it again!");
+				}
+				//If someone has won and the piece is part of the player, show him the victory message
+				else if (state == State.Won && turn == winner){
+					JOptionPane.showMessageDialog(frame,
+							"You have won, congratulations!");
+				}
+				else {
+					JOptionPane.showMessageDialog(frame,
+							"You have lost, try it again!");
+				}
 				//handleOnGameOver(); 
 			}
 		});

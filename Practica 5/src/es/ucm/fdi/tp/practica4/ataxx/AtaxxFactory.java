@@ -54,8 +54,8 @@ public class AtaxxFactory implements GameFactory {
 	//El dummy esta para evitar lios entre constructoras
 	public AtaxxFactory(int obs, boolean dummy) {
 		this(DEF_DIM);
-		if (obs > (dim * dim) - 8){
-			throw new GameError("The number of obstacules must be equal or less than " + (dim*dim - 8));
+		if (obs > ((dim * dim) / 5)){
+			throw new GameError("The number of obstacules must be equal or less than " + ((dim * dim) / 5));
 		} else {
 			this.obstacles = obs;
 		}
@@ -65,8 +65,8 @@ public class AtaxxFactory implements GameFactory {
 		if (dim < 5) {
 			throw new GameError("Dimension must be at least 5: " + dim);
 		}
-		else if (obs > (dim * dim) - 8){
-			throw new GameError("The number of obstacules must be equal or less than " + (dim*dim - 8));
+		else if (obs > ((dim * dim) / 5)){
+			throw new GameError("The number of obstacules must be equal or less than " + ((dim * dim) / 5));
 		}
 		else {
 			this.dim = dim;

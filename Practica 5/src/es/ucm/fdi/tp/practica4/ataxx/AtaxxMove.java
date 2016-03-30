@@ -26,16 +26,16 @@ public class AtaxxMove extends GameMove {
 	/**
 	 * The rowOrigin where to place the piece return by {@link GameMove#getPiece()}.
 	 * <p>
-	 * Fila en la que se colOriginoca la ficha devuelta por
+	 * Fila en la que se coloca la ficha devuelta por
 	 * {@link GameMove#getPiece()}.
 	 */
 	protected int rowDest;
 
 	/**
-	 * The colOriginumn where to place the piece return by {@link GameMove#getPiece()}
+	 * The column where to place the piece return by {@link GameMove#getPiece()}
 	 * .
 	 * <p>
-	 * colOriginumna en la que se colOriginoca la ficha devuelta por
+	 * columna en la que se coloca la ficha devuelta por
 	 * {@link GameMove#getPiece()}.
 	 */
 	protected int colDest;
@@ -84,26 +84,27 @@ public class AtaxxMove extends GameMove {
 		this.colDest = colDest;
 	}
 	
-	//funka
+	
 	@Override
 	public void execute(Board board, List<Piece> pieces) {
 		Piece p = board.getPosition(rowOrigin, colOrigin);
-		//boolean done = false;
 		//La pieza que mueves tiene que ser una de tu turno
 		if (getPiece() == p){
 			if (p != null && !pieces.equals(p)){
 				if (rowDest >= 0 && rowDest < board.getRows() && colDest >= 0 && colDest < board.getCols() 
 						&& board.getPosition(rowDest, colDest) == null){
-					int row = Math.abs(rowDest - rowOrigin);
-					int col = Math.abs(colDest - colOrigin);
+					
+					int distanceRow = Math.abs(rowDest - rowOrigin);
+					int distanceCol = Math.abs(colDest - colOrigin);
+					int dist = Math.max(Math.abs(rowDest - rowOrigin), Math.abs(colDest - colOrigin));
 					//Muevo 1 casilla la ficha
-					if (row <= 2 && col <= 2){
+					if (distanceRow <= 2 && distanceCol <= 2){
 						board.setPosition(rowDest, colDest, getPiece());
 						//Muevo 2 casillas la pieza y la elimino de su posicion original
-						if (row == 2 || col == 2){
+						if (distanceRow == 2 || distanceCol == 2){
 							board.setPosition(rowOrigin, colOrigin, null);
 						}
-					//Añadir cambio de fichas
+					
 					changePieces(board, pieces);
 					}
 					else {

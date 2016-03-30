@@ -52,8 +52,9 @@ public class AtaxxRules implements GameRules {
 		else if (dim % 2 == 0){
 			throw new GameError("Dimension must be odd: " + dim);
 		}
-		else if (obs > dim * dim){
-			throw new GameError("The number of obstacules must be less than " + (dim*dim));
+		//The number of obstacles must be less than the 20% 
+		else if (obs > ((dim * dim) / 5)){
+			throw new GameError("The number of obstacules must be less than " + ((dim * dim) / 5));
 		}
 		else {
 			this.dim = dim;
@@ -101,7 +102,8 @@ public class AtaxxRules implements GameRules {
 		}
 		//Añadir Obstaculos (en que posiciones los pongo) obstaculos
 		int i = 0;
-		Piece obstacle = new Piece("*#123456780");
+		
+		Piece obstacle = getObstPiece(pieces);
 		
 		while(i < obstacles){
 			int a = Utils.randomInt(dim);
@@ -120,7 +122,7 @@ public class AtaxxRules implements GameRules {
 	@Override
 	public Piece initialPlayer(Board board, List<Piece> playersPieces) {
 		//Protection against situations where the player 1 (index 0) cant do a first move, for example, if you create a lot of obstacles
-		//(for example, 41 (the cap of obstacles in a 7x7 board) with only 2 players)
+		//(for example, 9 (the cap of obstacles in a 7x7 board) with only 2 players)
 		//I use playersPieces.size() - 1 as the player so that the next is the player 1 (index 0)
 		return nextPlayer(board, playersPieces, playersPieces.get(playersPieces.size() - 1));
 	}
@@ -202,6 +204,20 @@ public class AtaxxRules implements GameRules {
 		}
 		return numPieces;
 	}
+	
+	/**
+	 * //Creates different obstacles, avoiding using the same name in a piece that a player or other obstacle uses 
+	 * @param l The list of pieces
+	 * @return A new obstacle (Piece)
+	 */
+	private Piece getObstPiece(List<Piece> l) {
+		int i=0;
+		while ( true ) {
+			Piece o = new Piece("*#"+i);
+			if ( !l.contains(o) ) return o;
+			i++;
+		}
+	}
 
 	@Override
 	public Piece nextPlayer(Board board, List<Piece> playersPieces, Piece lastPlayer) {
@@ -273,6 +289,7 @@ public class AtaxxRules implements GameRules {
 	public double evaluate(Board board, List<Piece> pieces, Piece turn, Piece p) {
 		return 0;
 	}
+	
 	
 	
 }

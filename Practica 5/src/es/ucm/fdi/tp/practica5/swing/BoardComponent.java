@@ -15,8 +15,9 @@ public abstract class BoardComponent extends JComponent {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public BoardComponent(){
-		
+	//habra que hacer algo, seguramente inicializar board
+	public BoardComponent(Board board){
+		this.board = board;
 	}
 	
 	public void redraw(Board b){

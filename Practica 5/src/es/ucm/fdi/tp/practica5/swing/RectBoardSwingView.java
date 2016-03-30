@@ -1,6 +1,9 @@
 package es.ucm.fdi.tp.practica5.swing;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+
+import javax.swing.JComponent;
 
 import es.ucm.fdi.tp.basecode.bgame.control.Controller;
 import es.ucm.fdi.tp.basecode.bgame.control.Player;
@@ -23,7 +26,10 @@ public abstract class RectBoardSwingView extends SwingView {
 	}
 	@Override
 	protected void initBoardGui() {
-		boardComp = new BoardComponent() {
+		//Crear la vista del tablero y pasarla a SwingView con la funcion: 
+		//final protected void setBoardArea(JComponent c);
+	
+		boardComp = new BoardComponent(getBoard()) {
 			/**
 			 * 
 			 */
@@ -35,6 +41,7 @@ public abstract class RectBoardSwingView extends SwingView {
 			@Override
 			protected Color getPieceColor(Piece p) {
 				return null;
+				
 			// get the color from the colours table, and if not
 			// available (e.g., for obstacles) set it to have a color
 			};

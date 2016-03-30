@@ -25,7 +25,6 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 import es.ucm.fdi.tp.practica5.ataxx.AtaxxFactoryExt;
 import es.ucm.fdi.tp.practica5.attt.AdvancedTTTFactoryExt;
 import es.ucm.fdi.tp.practica5.connectn.ConnectNFactoryExt;
-import es.ucm.fdi.tp.practica5.swing.SwingControler;
 import es.ucm.fdi.tp.practica5.ttt.TicTacToeFactoryExt;
 
 /**
@@ -110,7 +109,7 @@ public class Main {
 	 * <p>
 	 * Modos de juego.
 	 */
-	enum PlayerMode {
+	public enum PlayerMode {
 		MANUAL("m", "Manual"), RANDOM("r", "Random"), AI("a", "Automatics");
 
 		private String id;
@@ -790,7 +789,8 @@ public class Main {
 			else{
 				gameFactory.createSwingView(g, c, null, gameFactory.createRandomPlayer(), gameFactory.createAIPlayer(aiPlayerAlg));
 			}
-			c = new SwingControler(g, pieces);
+			//Para esto se ha creado la clase swingControler
+			c = new Controller(g, pieces);
 			break;
 		default:
 			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
