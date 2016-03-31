@@ -50,7 +50,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	//Manejar PlayerMode, no me gusta el enumerado
 	private Map<Piece, PlayerMode> playerTypes;
 	private String gameDesc;
-	private JPanel crtlPanel;
+	private JPanel ctrlPanel;
 	private JPanel mainPanel;
 
 	
@@ -79,65 +79,147 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private void initGUI(){ 
 		this.setSize(400, 200);
 		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		//Set the panel to be the one of the swingView
 		mainPanel = new JPanel( new BorderLayout(5,5) );
 		this.setContentPane(mainPanel);
 		
 		
-		crtlPanel = new JPanel(); // BOXLAYOUT
-		mainPanel.add(crtlPanel, BorderLayout.LINE_END);
+		ctrlPanel = new JPanel(); // BOXLAYOUT
+		
 		
 		//Hacer funciones para añadir cada componente, completar el codigo de estas funciones
-		addQuitRestartButtons();
 		addStatusMessages();
 		addPlayerInformation();
 		addPieceColors();
 		addPlayerModes();
 		addAutomaticMoves();
+		addQuitRestartButtons();
+		mainPanel.add(ctrlPanel, BorderLayout.LINE_END);
 		initBoardGui();
 		
+		
+		this.pack();
+		this.setVisible(true);
+		
+	}
+	
+	/**
+	 * Add the random and intelligent button into ctrlPanel
+	 */
+	private void addAutomaticMoves() {
+		JPanel movesPanel = new JPanel();
+		//Random Button
+		JButton random = new JButton("Random");
+		movesPanel.add(random);
+		//Random Button
+		JButton intelligent = new JButton("Intelligent");
+		movesPanel.add(intelligent);
+		//Border
+		Border b = BorderFactory.createLineBorder(Color.black, 2);
+		movesPanel.setBorder(BorderFactory.createTitledBorder(b, "Automatic Modes"));
+		ctrlPanel.add(movesPanel);
+	}
+	
+	/**
+	 * Add a JPanel which contains the players pieces, the player modes and a set button to change between modes into ctrlPanel
+	 */
+	private void addPlayerModes() {
+	//Falla porque no tenemos la lista de piezas pasada por ningun lado
+			//Players ComboBox
+			JPanel optionsPanel = new JPanel();
+			/*
+			String namePieces[] = new String[pieces.size()];
+			for (int i =0; i < pieces.size(); i++){
+				namePieces[i] = pieces.get(i).toString();
+			}
+			*/
+			String namePieces[] = {"X", "O"};
+			JComboBox<String> listPieces = new JComboBox<>(namePieces);
+			listPieces.setSelectedIndex(0);
+			optionsPanel.add(listPieces);
+			//Modes ComboBox
+			String nameModes[] = {"Manual", "Intelligent", "Random"};
+			JComboBox<String> listModes = new JComboBox<>(nameModes);
+			optionsPanel.add(listModes);
+			//Set Button
+			JButton set = new JButton("Set");
+			optionsPanel.add(set);
+			//Border
+			Border b = BorderFactory.createLineBorder(Color.black, 2);
+			optionsPanel.setBorder(BorderFactory.createTitledBorder(b, "Player Modes"));
+			ctrlPanel.add(optionsPanel);
+	}
+	
+	/**
+	 * Add a JPanel which contains the players pieces and the chooseColor button into ctrlPanel
+	 */
+	private void addPieceColors() {
+		//Players ComboBox
+		JPanel optionsPanel = new JPanel();
 		/*
-		//Tabla
+		String namePieces[] = new String[pieces.size()];
+		for (int i =0; i < pieces.size(); i++){
+			namePieces[i] = pieces.get(i).toString();
+		}
+		*/
+		String namePieces[] = {"X", "O"};
+		JComboBox<String> listPieces = new JComboBox<>(namePieces);
+		listPieces.setSelectedIndex(0);
+		optionsPanel.add(listPieces);
+		//Set Button
+		JButton chooseColor = new JButton("Choose Color");
+		optionsPanel.add(chooseColor);
+		//Border
+		Border b = BorderFactory.createLineBorder(Color.black, 2);
+		optionsPanel.setBorder(BorderFactory.createTitledBorder(b, "Piece Colors"));
+		ctrlPanel.add(optionsPanel);
+	}
+
+	/**
+	 * Add a JPanel which contains a table with the players, mode and number of pieces they have into ctrlPanel
+	 */
+	private void addPlayerInformation() {
+		JPanel frame = new JPanel();
 		String[] columnNames = { "Player", "Mode", "#Pieces" };
 		Object[][] data = {
 				{ "X", "Manual", ""},
 				{ "O", "Inteligent", ""},
 		};
 		JTable table = new JTable(data,columnNames);
+		
 		//Falta cambiar el color a la tabla
-		mainPanel.add(new JScrollPane(table));
+		frame.add(new JScrollPane(table));
+		//No funciona, no se por que
 		table.setFillsViewportHeight(true);
-		*/
+		Border b = BorderFactory.createLineBorder(Color.black, 2);
+		frame.setBorder(BorderFactory.createTitledBorder(b, "Player Information"));
 		
+		ctrlPanel.add(frame);
 	}
-	private void addAutomaticMoves() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void addPlayerModes() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void addPieceColors() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void addPlayerInformation() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	/**
 	 * Adds the TextArea (usar JTextArea) where the messages are gonna be displayed
 	 */
 	private void addStatusMessages() {
-		// TODO Auto-generated method stub
+		Border b = BorderFactory.createLineBorder(Color.black, 2);
+		String story = "I sexually Identify as an Attack Helicopter. Ever since I was a boy I dreamed of soaring over the oilfields dropping hot sticky loads on disgusting foreigners. People say to me that a person being a helicopter is Impossible and I’m fucking retarded but I don’t care, I’m beautiful. I’m having a plastic surgeon install rotary blades, 30 mm cannons and AMG-114 Hellfire missiles on my body. From now on I want you guys to call me “Apache” and respect my right to kill from above and kill needlessly. If you can’t accept me you’re a heliphobe and need to check your vehicle privilege. Thank you for being so understanding.";
+		JTextArea storyArea = new JTextArea(story);
+		storyArea.setEditable(false);
+		storyArea.setLineWrap(true);
+		storyArea.setWrapStyleWord(true);
+		JScrollPane area = new JScrollPane(storyArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		area.setPreferredSize(new Dimension(300, 200));
+		area.setBorder(BorderFactory.createTitledBorder(b, "Status Messages"));
+		ctrlPanel.add(area);
 		
 	}
 
+	/**
+	 * Add a JPanel which contains the quit and restart button into ctrlPanel
+	 */
 	private void addQuitRestartButtons() {
 		JPanel p = new JPanel();
 
@@ -172,12 +254,12 @@ public abstract class SwingView extends JFrame implements GameObserver {
 					@Override
 					public void windowOpened(WindowEvent e) {
 					}
-				
 				});
+				
 		p.add(quit);
 		JButton restart = new JButton("Restart");
 		p.add(restart);
-		crtlPanel.add(p);
+		ctrlPanel.add(p);
 	}
 
 	final protected Piece getTurn() { return turn; }
@@ -188,7 +270,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	final protected void setBoardArea(JComponent c) { 
 		mainPanel.add(c,BorderLayout.CENTER);
 	}
-	final protected void addMsg(String msg) { 
+	final protected void addMsg(String msg){ 
 		
 	}
 	
@@ -241,56 +323,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	 */
 	//Sobra todo el codigo de aqui, son funciones pequeñas de hacer
 	private void handleGameStart() {
-		JPanel visualBoard = new JPanel();
-		visualBoard.setPreferredSize(new Dimension(20,20));	
-		visualBoard.setBackground(Color.GRAY);
-		
-		this.add(visualBoard, BorderLayout.CENTER);
-		//Cant resize
-		//this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		
-		
-		Border b = BorderFactory.createLineBorder(Color.black, 2);
-		
-		JPanel optionsPanel = new JPanel();
-		
-		optionsPanel.setPreferredSize(new Dimension(50,50));
-		
-		String story = "I sexually Identify as an Attack Helicopter. Ever since I was a boy I dreamed of soaring over the oilfields dropping hot sticky loads on disgusting foreigners. People say to me that a person being a helicopter is Impossible and I’m fucking retarded but I don’t care, I’m beautiful. I’m having a plastic surgeon install rotary blades, 30 mm cannons and AMG-114 Hellfire missiles on my body. From now on I want you guys to call me “Apache” and respect my right to kill from above and kill needlessly. If you can’t accept me you’re a heliphobe and need to check your vehicle privilege. Thank you for being so understanding.";
-		JTextArea storyArea = new JTextArea(story);
-		storyArea.setEditable(false);
-		storyArea.setLineWrap(true);
-		storyArea.setWrapStyleWord(true);
-		JScrollPane area = new JScrollPane(storyArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		area.setPreferredSize(new Dimension(300, 200));
-		area.setBorder(BorderFactory.createTitledBorder(b, "Status Messages"));
-		optionsPanel.add(area);
-		
-		//Falla porque no tenemos la lista de piezas pasada por ningun lado
-		String namePieces[] = new String[pieces.size()];
-		for (int i =0; i < pieces.size(); i++){
-			namePieces[i] = pieces.get(i).toString();
-		}
-		
-		JComboBox<String> listPieces = new JComboBox<>(namePieces);
-		listPieces.setSelectedIndex(0);
-		optionsPanel.add(listPieces);
-		String nameModes[] = {"Manual", "Intelligent", "Random"};
-		JComboBox<String> listModes = new JComboBox<>(nameModes);
-		optionsPanel.add(listModes);
-		//Falta comboBox igual que listPieces
-		
-		
-		
-		
-		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		
-		
-		
-		this.add(optionsPanel, BorderLayout.LINE_END);
-		this.pack();
-		this.setVisible(true);
 		
 	}
 	

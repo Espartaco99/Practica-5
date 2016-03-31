@@ -10,6 +10,10 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 
 public class ConnectNSwingPlayer extends Player {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int row;
 	private int col;
 
