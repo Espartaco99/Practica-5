@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -86,8 +88,9 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		this.setContentPane(mainPanel);
 		
 		
-		ctrlPanel = new JPanel(); // BOXLAYOUT
-		
+		ctrlPanel = new JPanel();
+		//Alignment to ensure all the components are in the Y axis
+		ctrlPanel.setLayout(new BoxLayout(ctrlPanel, BoxLayout.Y_AXIS));
 		
 		//Hacer funciones para añadir cada componente, completar el codigo de estas funciones
 		addStatusMessages();
@@ -119,6 +122,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		//Border
 		Border b = BorderFactory.createLineBorder(Color.black, 2);
 		movesPanel.setBorder(BorderFactory.createTitledBorder(b, "Automatic Modes"));
+		//movesPanel.getAlignmentY();
 		ctrlPanel.add(movesPanel);
 	}
 	
@@ -178,25 +182,29 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	}
 
 	/**
-	 * Add a JPanel which contains a table with the players, mode and number of pieces they have into ctrlPanel
+	 * Add a ScrollPane which contains a table with the players, mode and number of pieces they have into ctrlPanel
 	 */
 	private void addPlayerInformation() {
-		JPanel frame = new JPanel();
+
 		String[] columnNames = { "Player", "Mode", "#Pieces" };
 		Object[][] data = {
 				{ "X", "Manual", ""},
 				{ "O", "Inteligent", ""},
 		};
 		JTable table = new JTable(data,columnNames);
+
+		table.setFillsViewportHeight(true);
+		table.setPreferredSize(new Dimension(300, 80));
 		
 		//Falta cambiar el color a la tabla
-		frame.add(new JScrollPane(table));
-		//No funciona, no se por que
-		table.setFillsViewportHeight(true);
 		Border b = BorderFactory.createLineBorder(Color.black, 2);
-		frame.setBorder(BorderFactory.createTitledBorder(b, "Player Information"));
+		JScrollPane scrollPane = new JScrollPane(table);
+		//Used to resize the scrollPane because its too big by default
+		scrollPane.setPreferredSize(new Dimension(300, 80));
 		
-		ctrlPanel.add(frame);
+		scrollPane.setBorder(BorderFactory.createTitledBorder(b, "Player Information"));
+		
+		ctrlPanel.add(scrollPane);
 	}
 	
 	/**
@@ -211,10 +219,19 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		storyArea.setWrapStyleWord(true);
 		JScrollPane area = new JScrollPane(storyArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		area.setPreferredSize(new Dimension(300, 200));
+		area.setPreferredSize(new Dimension(300, 100));
+		area.setMinimumSize(new Dimension(200, 100));
 		area.setBorder(BorderFactory.createTitledBorder(b, "Status Messages"));
 		ctrlPanel.add(area);
 		
+	}
+	
+	//La dejo por si tengo que usarla en otro lado (probablamente en RectBoard), aqui sobra 
+	private GridBagConstraints constraintsY(int i) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = i;
+        gbc.gridx = 0;
+		return gbc;
 	}
 
 	/**
