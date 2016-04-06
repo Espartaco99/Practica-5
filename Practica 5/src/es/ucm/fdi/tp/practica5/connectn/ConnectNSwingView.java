@@ -24,7 +24,7 @@ public class ConnectNSwingView extends RectBoardSwingView {
 	protected void handleMouseClick(int row, int col, int mouseButton) {
 		//Allow the moves of the mouse get captured, used in case the state or phase of the game dont allow us make a move
 		if (getMouseActive()){
-			
+			player.setMove(row, col);
 		}
 		
 	}

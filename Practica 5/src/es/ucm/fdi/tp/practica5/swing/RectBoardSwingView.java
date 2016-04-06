@@ -2,8 +2,10 @@ package es.ucm.fdi.tp.practica5.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import es.ucm.fdi.tp.basecode.bgame.control.Controller;
 import es.ucm.fdi.tp.basecode.bgame.control.Player;
@@ -58,7 +60,8 @@ public abstract class RectBoardSwingView extends SwingView {
 	@Override
 	protected void redrawBoard() {
 		// ask boardComp to redraw the board
-		boardComp.redraw((Board) this);
+		//boardComp.redraw();
+		boardComp.redraw(getBoard()); 
 	}
 	
 	protected abstract void handleMouseClick(int row, int col, int mouseButton);
@@ -72,7 +75,7 @@ public abstract class RectBoardSwingView extends SwingView {
 	}
 
 	@Override
-	protected void deActivateBoard() {
+	protected void deActivateBoard(){
 		mouseActive = false;
 	}
 	

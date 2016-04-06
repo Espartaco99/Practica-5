@@ -20,7 +20,6 @@ public class ConnectNSwingPlayer extends Player {
 	public void setMove(int row, int col) {
 		this.row = row;
 		this.col = col;
-		
 	}
 
 	@Override
