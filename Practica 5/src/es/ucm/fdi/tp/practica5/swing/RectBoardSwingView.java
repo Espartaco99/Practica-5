@@ -30,8 +30,9 @@ public abstract class RectBoardSwingView extends SwingView {
 	protected void initBoardGui() {
 		//Crear la vista del tablero y pasarla a SwingView con la funcion: 
 		//final protected void setBoardArea(JComponent c);
-	
-		boardComp = new BoardComponent(getBoard()) {
+		//NO se como hacerlo porque getBoard NO funciona, no esta inicializado
+		//Tengo que inicializar con onGameStart
+		boardComp = new BoardComponent() {
 			/**
 			 * 
 			 */

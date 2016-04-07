@@ -14,9 +14,9 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 import es.ucm.fdi.tp.basecode.bgame.model.Game.State;
 
 /**
- * Rules for ConnectN game.
+ * Rules for Ataxx game.
  * <ul>
- * <li>The game is played on an NxN board (with N>=3).</li>
+ * <li>The game is played on an NxN board (with N>=5).</li>
  * <li>The number of players is between 2 and 4.</li>
  * <li>The player turn in the given order, each placing a piece on an empty
  * cell. The winner is the one who construct a line (horizontal, vertical or
@@ -24,9 +24,9 @@ import es.ucm.fdi.tp.basecode.bgame.model.Game.State;
  * </ul>
  * 
  * <p>
- * Reglas del juego ConnectN.
+ * Reglas del juego Ataxx.
  * <ul>
- * <li>El juego se juega en un tablero NxN (con N>=3).</li>
+ * <li>El juego se juega en un tablero NxN (con N>=5).</li>
  * <li>El numero de jugadores esta entre 2 y 4.</li>
  * <li>Los jugadores juegan en el orden proporcionado, cada uno colocando una
  * ficha en una casilla vacia. El ganador es el que consigua construir una linea

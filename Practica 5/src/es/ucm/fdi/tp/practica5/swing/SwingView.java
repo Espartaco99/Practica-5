@@ -286,6 +286,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	final protected Color setPieceColor(Piece p, Color c) { return pieceColors.put(p,c); }
 	final protected void setBoardArea(JComponent c) { 
 		mainPanel.add(c,BorderLayout.CENTER);
+		this.pack();
 	}
 	final protected void addMsg(String msg){ 
 		

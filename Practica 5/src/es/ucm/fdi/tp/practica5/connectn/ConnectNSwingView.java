@@ -25,8 +25,21 @@ public class ConnectNSwingView extends RectBoardSwingView {
 		//Allow the moves of the mouse get captured, used in case the state or phase of the game dont allow us make a move
 		if (getMouseActive()){
 			player.setMove(row, col);
+			decideMakeManualMove(player);
 		}
 		
+		
+	}
+	@Override
+	protected void activateBoard() {
+	// - declare the board active, so handleMouseClick accepts moves
+	// - add corresponding message to the status messages indicating
+	// what to do for making a move, etc.
+	}
+	
+	@Override
+	protected void deActivateBoard() {
+	// declare the board inactive, so handleMouseClick rejects moves
 	}
 	
 }

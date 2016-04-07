@@ -1,6 +1,7 @@
 package es.ucm.fdi.tp.practica5.swing;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -23,8 +24,9 @@ public abstract class BoardComponent extends JComponent {
 	private static final long serialVersionUID = 1L;
 	
 	//habra que hacer algo, seguramente inicializar board
-	public BoardComponent(Board board){
-		this.board = board;
+	public BoardComponent(){
+//		initBoard(rows,cols);
+		initGUI();
 	}
 	
 	public void redraw(Board b){
@@ -36,6 +38,13 @@ public abstract class BoardComponent extends JComponent {
 		this.rows = rows;
 		this.cols = cols;
 		this.boardColor = new Color[rows][cols];
+		//Cambiar a getPieceColor y cambiar el bucle
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++)
+				if (Math.random() > 0.5)
+					boardColor[i][j] = Color.BLUE;
+				else
+					boardColor[i][j] = Color.RED;
 		
 	}
 	
@@ -62,7 +71,8 @@ public abstract class BoardComponent extends JComponent {
 				System.out.println("Button" + e.getButton() + " Clicked at" +"(" + e.getX() + ","+ e.getY() + ")");
 			}
 		});
-		//....
+		this.setSize(new Dimension(rows * _CELL_HEIGHT, cols * _CELL_WIDTH));
+		repaint();
 	}
 	
 	public void setBoardSize(int rows, int cols) {
@@ -70,10 +80,13 @@ public abstract class BoardComponent extends JComponent {
 		repaint();
 	}
 	
-	public void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g){
 		super.paintComponent(g);
 		_CELL_WIDTH = this.getWidth() / cols;
 		_CELL_HEIGHT = this.getHeight() / rows;
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++)
+				drawCell(i, j, g);
 	}
 	
 	private void drawCell(int row, int col, Graphics g) {

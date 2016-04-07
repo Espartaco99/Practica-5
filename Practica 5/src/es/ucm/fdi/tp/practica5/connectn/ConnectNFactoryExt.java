@@ -33,7 +33,10 @@ public class ConnectNFactoryExt extends ConnectNFactory {
 		SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
+					
 					GameObserver o = new ConnectNSwingView(g,c,viewPiece, random, ai);
+					//NO SE SI SE LLAMA AQUI
+					//o.onGameStart(board, gameDesc, pieces, turn);
 					g.addObserver(o);
 				}
 			});

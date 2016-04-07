@@ -7,6 +7,7 @@ import es.ucm.fdi.tp.basecode.bgame.model.Board;
 import es.ucm.fdi.tp.basecode.bgame.model.GameMove;
 import es.ucm.fdi.tp.basecode.bgame.model.GameRules;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
+import es.ucm.fdi.tp.basecode.connectn.ConnectNMove;
 
 public class ConnectNSwingPlayer extends Player {
 
@@ -25,8 +26,9 @@ public class ConnectNSwingPlayer extends Player {
 	@Override
 	public GameMove requestMove(Piece p, Board board, List<Piece> pieces,
 			GameRules rules) {
-		// TODO Auto-generated method stub
-		return null;
+		GameMove move = new ConnectNMove(row,col,p);
+		
+		return move;
 	}
 
 }
