@@ -54,7 +54,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private String gameDesc;
 	private JPanel ctrlPanel;
 	private JPanel mainPanel;
-
+	private JComboBox<Piece> listPieces;
 	
 	
 	/**
@@ -75,6 +75,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		initGUI();
 		g.addObserver(this);
 	}
+	
 	/**
 	 * Construct the view
 	 */
@@ -86,7 +87,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		//Set the panel to be the one of the swingView
 		mainPanel = new JPanel( new BorderLayout(5,5) );
 		this.setContentPane(mainPanel);
-		
 		
 		ctrlPanel = new JPanel();
 		//Alignment to ensure all the components are in the Y axis
@@ -101,7 +101,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		addQuitRestartButtons();
 		mainPanel.add(ctrlPanel, BorderLayout.LINE_END);
 		initBoardGui();
-		
 		
 		this.pack();
 		this.setVisible(true);
@@ -133,14 +132,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	//Falla porque no tenemos la lista de piezas pasada por ningun lado
 			//Players ComboBox
 			JPanel optionsPanel = new JPanel();
-			/*
-			String namePieces[] = new String[pieces.size()];
-			for (int i =0; i < pieces.size(); i++){
-				namePieces[i] = pieces.get(i).toString();
-			}
-			*/
-			String namePieces[] = {"X", "O"};
-			JComboBox<String> listPieces = new JComboBox<>(namePieces);
+			listPieces = new JComboBox<Piece>();
 			listPieces.setSelectedIndex(0);
 			optionsPanel.add(listPieces);
 			//Modes ComboBox
@@ -162,14 +154,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private void addPieceColors() {
 		//Players ComboBox
 		JPanel optionsPanel = new JPanel();
-		/*
-		String namePieces[] = new String[pieces.size()];
-		for (int i =0; i < pieces.size(); i++){
-			namePieces[i] = pieces.get(i).toString();
-		}
-		*/
-		String namePieces[] = {"X", "O"};
-		JComboBox<String> listPieces = new JComboBox<>(namePieces);
+		listPieces = new JComboBox<Piece>();
 		listPieces.setSelectedIndex(0);
 		optionsPanel.add(listPieces);
 		//Set Button
@@ -187,10 +172,8 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private void addPlayerInformation() {
 
 		String[] columnNames = { "Player", "Mode", "#Pieces" };
-		Object[][] data = {
-				{ "X", "Manual", ""},
-				{ "O", "Inteligent", ""},
-		};
+		
+		//Cambiar todo, mirar extra, jColor, MyTableModel
 		JTable table = new JTable(data,columnNames);
 
 		table.setFillsViewportHeight(true);
@@ -324,8 +307,11 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		this.board = board;
 		this.turn = turn;
 		this.gameDesc = gameDesc;
+		for (int i = 0; i < pieces.size(); i++){
+			this.playerTypes.put(pieces.get(i), PlayerMode.MANUAL);
+		}
 		SwingUtilities.invokeLater(new Runnable() {
-			//No se que hacer con esto
+			//Se llama solo por el juego
 			public void run() {
 
 				handleGameStart(); 
@@ -341,6 +327,28 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	 */
 	//Sobra todo el codigo de aqui, son funciones pequeñas de hacer
 	private void handleGameStart() {
+		
+		for( Piece p : pieces ) {
+			listPieces.addItem(p);
+		}
+		
+		/*
+		data = new String[pieces.size()][3];
+		//Poner el nombre las piezas
+		for (int i = 0; i < pieces.size(); i++){
+			data[i][0] = pieces.get(i).toString();
+			data[i][1] = playerTypes.get(pieces.get(i)).toString();
+			data[i][2] = board.getPieceCount(pieces.get(i)).toString();
+		}
+		*/
+		
+	
+		
+		//rellenar todo lo que se ha inicializado
+		
+		redrawBoard();
+		
+		
 		
 	}
 	

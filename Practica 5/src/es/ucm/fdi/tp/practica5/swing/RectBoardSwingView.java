@@ -43,11 +43,12 @@ public abstract class RectBoardSwingView extends SwingView {
 			}
 			@Override
 			protected Color getPieceColor(Piece p) {
-				return null;
+				return RectBoardSwingView.this.getPieceColor(p);
 				
 			// get the color from the colours table, and if not
 			// available (e.g., for obstacles) set it to have a color
 			};
+			
 			@Override
 			protected boolean isPlayerPiece(Piece p) {
 				return rootPaneCheckingEnabled;
