@@ -2,6 +2,7 @@ package es.ucm.fdi.tp.practica5.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GridBagConstraints;
@@ -11,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +30,10 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
+import es.ucm.fdi.tp.basecode.bgame.Utils;
 import es.ucm.fdi.tp.basecode.bgame.control.Controller;
 import es.ucm.fdi.tp.basecode.bgame.control.Player;
 import es.ucm.fdi.tp.basecode.bgame.model.Board;
@@ -56,7 +61,9 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private JPanel ctrlPanel;
 	private JPanel mainPanel;
 	private JComboBox<Piece> listPieces;
-	JTextArea storyArea;
+	private JTextArea storyArea;
+	private MyTableModel MyTable;
+	
 	/**
 	 * 
 	 */
@@ -71,10 +78,70 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		this.ctrl = c;
 		this.localPiece = localPiece;
 		this.playerTypes = new HashMap<>();
-		//this.playerTypes.put(localPiece, PlayerMode.MANUAL);
+		this.pieceColors = new HashMap<>();
 		initGUI();
 		g.addObserver(this);
 	}
+	
+	class MyTableModel extends DefaultTableModel {
+
+		/**
+		* 
+		*/
+		private static final long serialVersionUID = 1L;
+
+		private String[] colNames;
+		private List<String> modes;
+		private List<Integer> numPieces;
+
+		private MyTableModel() {
+			this.colNames = new String[] { "Player", "Mode", "#Pieces" };
+			this.modes = new ArrayList<>();
+			this.numPieces = new ArrayList<>();
+			
+		}
+
+		@Override
+		public String getColumnName(int col) {
+			return colNames[col];
+		}
+
+		@Override
+		public int getColumnCount() {
+			return colNames.length;
+		}
+
+		@Override
+		public int getRowCount() {
+			return modes != null ? modes.size() : 0;
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			if (columnIndex == 0) {
+				return rowIndex;
+			} else {
+				return modes.get(rowIndex);
+			}
+		}
+
+		private void addNameMode(String name) {
+			modes.add(name);
+			//refresh();
+		}
+
+		private void refresh() {
+			fireTableDataChanged();
+		}
+
+		private void addNumPieces(Integer pieceCount) {
+			numPieces.add(pieceCount);
+			
+		}
+
+	};
+	
+	
 	
 	/**
 	 * Construct the view
@@ -169,15 +236,22 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	 * Add a ScrollPane which contains a table with the players, mode and number of pieces they have into ctrlPanel
 	 */
 	private void addPlayerInformation() {
-
-		String[] columnNames = { "Player", "Mode", "#Pieces" };
 		
-		//Cambiar todo, mirar extra, jColor, MyTableModel
-		/*
-		JTable table = new JTable(data,columnNames);
+		MyTable = new MyTableModel();
+		JTable table = new JTable(MyTable) {
+			private static final long serialVersionUID = 1L;
 
-		table.setFillsViewportHeight(true);
-		table.setPreferredSize(new Dimension(300, 80));
+			// THIS IS HOW WE CHANGE THE COLOR OF EACH ROW
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				Component comp = super.prepareRenderer(renderer, row, col);
+
+				// the color of row 'row' is taken from the colors table, if
+				// 'null' setBackground will use the parent component color.
+				comp.setBackground(pieceColors.get(row));
+				return comp;
+			}
+		};
 		
 		//Falta cambiar el color a la tabla
 		Border b = BorderFactory.createLineBorder(Color.black, 2);
@@ -187,7 +261,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		
 		scrollPane.setBorder(BorderFactory.createTitledBorder(b, "Player Information"));
 		ctrlPanel.add(scrollPane);
-		*/
+		
 	}
 	
 	/**
@@ -322,18 +396,26 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	/**
 	 * Adds the main boxes and elements in the panel previously made by initGUI
 	 */
-	//Sobra todo el codigo de aqui, son funciones pequeñas de hacer
+	//NO SE PORQUE SE LLAMA DOS VECES A LA FUNCION
 	private void handleGameStart() {
-		//HashMap used for playerTypes
-		for (int i = 0; i < pieces.size(); i++){
-			this.playerTypes.put(pieces.get(i), PlayerMode.MANUAL);
-		}
+		//HashMap used for playerTypes		
 		for( Piece p : pieces ) {
 			listPieces.addItem(p);
+			this.playerTypes.put(p, PlayerMode.MANUAL);
+			//Put random colors at the start
+			this.pieceColors.put(p, Utils.randomColor());
+			
+			MyTable.addNameMode(playerTypes.get(p).name());
+			//NO FUNCIONA COMO DEBERIA
+			if (board.getPieceCount(p) != null){
+				MyTable.addNumPieces(board.getPieceCount(p));
+			}
 		}
+		MyTable.refresh();
 		listPieces.setSelectedIndex(0);
-		String story = "Turn for " + pieces.get(0).toString();
-		storyArea.add(comp);
+		String story = "Turn for " + pieces.get(0).toString() + "\n";
+		storyArea.append(story);
+		
 		/*
 		data = new String[pieces.size()][3];
 		//Poner el nombre las piezas
