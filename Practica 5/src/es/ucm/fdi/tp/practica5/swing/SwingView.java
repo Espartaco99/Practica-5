@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +56,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private JPanel ctrlPanel;
 	private JPanel mainPanel;
 	private JComboBox<Piece> listPieces;
-	
-	
+	JTextArea storyArea;
 	/**
 	 * 
 	 */
@@ -70,7 +70,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		super("Board Games: ");
 		this.ctrl = c;
 		this.localPiece = localPiece;
-		
+		this.playerTypes = new HashMap<>();
 		//this.playerTypes.put(localPiece, PlayerMode.MANUAL);
 		initGUI();
 		g.addObserver(this);
@@ -133,7 +133,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			//Players ComboBox
 			JPanel optionsPanel = new JPanel();
 			listPieces = new JComboBox<Piece>();
-			listPieces.setSelectedIndex(0);
 			optionsPanel.add(listPieces);
 			//Modes ComboBox
 			String nameModes[] = {"Manual", "Intelligent", "Random"};
@@ -155,7 +154,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		//Players ComboBox
 		JPanel optionsPanel = new JPanel();
 		listPieces = new JComboBox<Piece>();
-		listPieces.setSelectedIndex(0);
+		
 		optionsPanel.add(listPieces);
 		//Set Button
 		JButton chooseColor = new JButton("Choose Color");
@@ -174,6 +173,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		String[] columnNames = { "Player", "Mode", "#Pieces" };
 		
 		//Cambiar todo, mirar extra, jColor, MyTableModel
+		/*
 		JTable table = new JTable(data,columnNames);
 
 		table.setFillsViewportHeight(true);
@@ -186,8 +186,8 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		scrollPane.setPreferredSize(new Dimension(300, 80));
 		
 		scrollPane.setBorder(BorderFactory.createTitledBorder(b, "Player Information"));
-		
 		ctrlPanel.add(scrollPane);
+		*/
 	}
 	
 	/**
@@ -195,8 +195,8 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	 */
 	private void addStatusMessages() {
 		Border b = BorderFactory.createLineBorder(Color.black, 2);
-		String story = "I sexually Identify as an Attack Helicopter. Ever since I was a boy I dreamed of soaring over the oilfields dropping hot sticky loads on disgusting foreigners. People say to me that a person being a helicopter is Impossible and I’m fucking retarded but I don’t care, I’m beautiful. I’m having a plastic surgeon install rotary blades, 30 mm cannons and AMG-114 Hellfire missiles on my body. From now on I want you guys to call me “Apache” and respect my right to kill from above and kill needlessly. If you can’t accept me you’re a heliphobe and need to check your vehicle privilege. Thank you for being so understanding.";
-		JTextArea storyArea = new JTextArea(story);
+		//String story = "I sexually Identify as an Attack Helicopter. Ever since I was a boy I dreamed of soaring over the oilfields dropping hot sticky loads on disgusting foreigners. People say to me that a person being a helicopter is Impossible and I’m fucking retarded but I don’t care, I’m beautiful. I’m having a plastic surgeon install rotary blades, 30 mm cannons and AMG-114 Hellfire missiles on my body. From now on I want you guys to call me “Apache” and respect my right to kill from above and kill needlessly. If you can’t accept me you’re a heliphobe and need to check your vehicle privilege. Thank you for being so understanding.";
+		storyArea = new JTextArea();
 		storyArea.setEditable(false);
 		storyArea.setLineWrap(true);
 		storyArea.setWrapStyleWord(true);
@@ -307,9 +307,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		this.board = board;
 		this.turn = turn;
 		this.gameDesc = gameDesc;
-		for (int i = 0; i < pieces.size(); i++){
-			this.playerTypes.put(pieces.get(i), PlayerMode.MANUAL);
-		}
 		SwingUtilities.invokeLater(new Runnable() {
 			//Se llama solo por el juego
 			public void run() {
@@ -327,11 +324,16 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	 */
 	//Sobra todo el codigo de aqui, son funciones pequeñas de hacer
 	private void handleGameStart() {
-		
+		//HashMap used for playerTypes
+		for (int i = 0; i < pieces.size(); i++){
+			this.playerTypes.put(pieces.get(i), PlayerMode.MANUAL);
+		}
 		for( Piece p : pieces ) {
 			listPieces.addItem(p);
 		}
-		
+		listPieces.setSelectedIndex(0);
+		String story = "Turn for " + pieces.get(0).toString();
+		storyArea.add(comp);
 		/*
 		data = new String[pieces.size()][3];
 		//Poner el nombre las piezas
