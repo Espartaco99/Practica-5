@@ -30,6 +30,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -38,7 +39,6 @@ import es.ucm.fdi.tp.basecode.bgame.control.Controller;
 import es.ucm.fdi.tp.basecode.bgame.control.Player;
 import es.ucm.fdi.tp.basecode.bgame.model.Board;
 import es.ucm.fdi.tp.basecode.bgame.model.Game.State;
-import es.ucm.fdi.tp.extra.jcolor.ColorChooser;
 import es.ucm.fdi.tp.basecode.bgame.model.GameObserver;
 import es.ucm.fdi.tp.basecode.bgame.model.GameRules;
 import es.ucm.fdi.tp.basecode.bgame.model.Observable;
@@ -49,6 +49,7 @@ import es.ucm.fdi.tp.practica5.Main.PlayerMode;
 public abstract class SwingView extends JFrame implements GameObserver {
 	
 	private Controller ctrl;
+	//Used for the multiviews
 	private Piece localPiece;
 	private Piece turn;
 	//De donde saco el tablero
@@ -62,9 +63,13 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private String gameDesc;
 	private JPanel ctrlPanel;
 	private JPanel mainPanel;
-	private JComboBox<Piece> listPieces;
+	private JComboBox<Piece> listPieces1;
+	private JComboBox<Piece> listPieces2;
 	private JTextArea storyArea;
 	private MyTableModel MyTable;
+	private Player randPlayer;
+	private Player aiPlayer;
+	
 	
 	/**
 	 * 
@@ -81,12 +86,15 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		this.localPiece = localPiece;
 		this.playerTypes = new HashMap<>();
 		this.pieceColors = new HashMap<>();
-		this.listPieces = new JComboBox<>();
+		
+		
+		this.randPlayer = randPlayer;
+		this.aiPlayer = aiPlayer;
 		initGUI();
 		g.addObserver(this);
 	}
 	
-	class MyTableModel extends DefaultTableModel {
+	class MyTableModel extends AbstractTableModel {
 
 		/**
 		* 
@@ -94,14 +102,12 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		private static final long serialVersionUID = 1L;
 
 		private String[] colNames;
-		private List<String> modes;
+		
 		private List<Integer> numPieces;
 
 		public MyTableModel() {
 			this.colNames = new String[] { "Player", "Mode", "#Pieces" };
-			this.modes = new ArrayList<>();
-			this.numPieces = new ArrayList<>();
-			
+		
 		}
 
 		@Override
@@ -116,31 +122,23 @@ public abstract class SwingView extends JFrame implements GameObserver {
 
 		@Override
 		public int getRowCount() {
-			return modes != null ? modes.size() : 0;
+			return playerTypes != null ? playerTypes.size() : 0;
 		}
-		/*
+		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			if (columnIndex == 0) {
 				return rowIndex;
 			} else {
-				return modes.get(rowIndex);
+				//COMO HACER ESTO PARA QUE ENVIE A LAS 2 COLUMNAS
+				return playerTypes.get(pieces.get(rowIndex)).getDesc();
+//				&& board.getPieceCount(pieces.get(rowIndex))
 			}
 		}
-		 */
 		
-		public void addNameMode(String name) {
-			modes.add(name);
-			//refresh();
-		}
-
 		public void refresh() {
+			fireTableStructureChanged();
 			fireTableDataChanged();
-		}
-
-		public void addNumPieces(int pieceCount) {
-			numPieces.add(pieceCount);
-			
 		}
 
 	};
@@ -203,20 +201,24 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	//Falla porque no tenemos la lista de piezas pasada por ningun lado
 			//Players ComboBox
 			JPanel optionsPanel = new JPanel();
-			//listPieces = new JComboBox<Piece>();
-			optionsPanel.add(listPieces);
-			//Modes ComboBox
+			listPieces1 = new JComboBox<Piece>();
+			optionsPanel.add(listPieces1);
+			//Modes ComboBox, 
+			
+			//HACER CON UN ENUMERADO COMO PLAYERMODE, QUITAR STRING
 			String nameModes[] = {"Manual", "Intelligent", "Random"};
 			JComboBox<String> listModes = new JComboBox<>(nameModes);
 			optionsPanel.add(listModes);
 			//Set Button
 			JButton set = new JButton("Set");
+			//Cambiar cosas de aqui
 			set.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					//All the items in the listPieces are of the Piece type, so the casting wont fail
-					Piece p = (Piece)listPieces.getSelectedItem();
+					Piece p = (Piece)listPieces1.getSelectedItem();
 					listModes.getSelectedItem();
+					//SwingView.this.playerTypes.
 				}
 			});
 			optionsPanel.add(set);
@@ -232,8 +234,8 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private void addPieceColors() {
 		//Players ComboBox
 		JPanel optionsPanel = new JPanel();
-		//listPieces = new JComboBox<Piece>();
-		optionsPanel.add(listPieces);
+		listPieces2 = new JComboBox<Piece>();
+		optionsPanel.add(listPieces2);
 		
 		JButton chooseColor = new JButton("Choose Color");
 		chooseColor.addActionListener(new ActionListener() {
@@ -241,7 +243,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//All the items in the listPieces are of the Piece type, so the casting wont fail
-				Piece p = (Piece)listPieces.getSelectedItem();
+				Piece p = (Piece)listPieces2.getSelectedItem();
 				ColorChooser c = new ColorChooser(new JFrame(), "Choose Line Color", pieceColors.get(p));
 				if (c.getColor() != null) {
 					pieceColors.put(p, c.getColor());
@@ -262,14 +264,12 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private void addPlayerInformation() {
 		
 		MyTable = new MyTableModel();
-		MyTable.getRowCount();
 		JTable table = new JTable(MyTable) {
 			private static final long serialVersionUID = 1L;
 
 			// THIS IS HOW WE CHANGE THE COLOR OF EACH ROW
 			@Override
 			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-				//NO SE PORQUE NO FUNCIONA
 				Component comp = super.prepareRenderer(renderer, row, col);
 				// the color of row 'row' is taken from the colors table, if
 				// 'null' setBackground will use the parent component color.
@@ -308,13 +308,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		
 	}
 	
-	//La dejo por si tengo que usarla en otro lado (probablamente en RectBoard), aqui sobra 
-	private GridBagConstraints constraintsY(int i) {
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridy = i;
-        gbc.gridx = 0;
-		return gbc;
-	}
 
 	/**
 	 * Add a JPanel which contains the quit and restart button into ctrlPanel
@@ -381,20 +374,30 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	final protected void addMsg(String msg){ 
 		storyArea.append(msg);
 	}
-	//Lo recibes de ConnectNSqingView
+	
+	//Lo recibes de ConnectNSwingView, debe de estar bien
 	final protected void decideMakeManualMove(Player manualPlayer) { 
-		//De donde saco las GameRules
-		GameRules rules;
-		manualPlayer.requestMove(turn, board, pieces, rules.);
-		
+		//If the move is null, it throws and exception, we just catch it and do nothing casue there isnt a move 
+		try{
+			ctrl.makeMove(manualPlayer);			
+		}
+		catch (Exception e){
+		}
 	}
 	
 	@SuppressWarnings("unused")
 	private void decideMakeAutomaticMove() { 
-		/*
-		if (turn == //automatic and belongs to this view)
-		ctrl.makeMove(); 
-		*/
+		//If the player belong to this view 
+		if (localPiece == turn){
+			//and the mode is random or AI, we make the move
+			if (playerTypes.get(turn) == PlayerMode.RANDOM){
+				ctrl.makeMove(randPlayer);
+			}
+			else if (playerTypes.get(turn) == PlayerMode.AI){
+				ctrl.makeMove(aiPlayer);
+			}
+		}
+		
 	}
 	
 	protected abstract void initBoardGui();
@@ -433,19 +436,20 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private void handleGameStart() {
 		//HashMap used for playerTypes		
 		for( Piece p : pieces ) {
-			listPieces.addItem(p);
+			listPieces1.addItem(p);
+			listPieces2.addItem(p);
 			this.playerTypes.put(p, PlayerMode.MANUAL);
 			//Put random colors at the start
 			this.pieceColors.put(p, Utils.randomColor());
 			
-			MyTable.addNameMode(playerTypes.get(p).name());
 			//NO FUNCIONA COMO DEBERIA, imprime lo mismo que 
 			if (board.getPieceCount(p) != null){
-				MyTable.addNumPieces(board.getPieceCount(p));
+				//MyTable.addNumPieces(board.getPieceCount(p));
 			}
 		}
 		MyTable.refresh();
-		listPieces.setSelectedIndex(0);
+		listPieces1.setSelectedIndex(0);
+		listPieces2.setSelectedIndex(0);
 		String story = "Turn for " + pieces.get(0).toString() + "\n";
 		storyArea.append(story);
 		super.setTitle("Board Games: " + gameDesc);
