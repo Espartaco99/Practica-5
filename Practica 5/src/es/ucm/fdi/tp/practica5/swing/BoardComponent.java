@@ -85,7 +85,6 @@ public abstract class BoardComponent extends JComponent {
 		if (board != null && board.getPosition(row, col) != null) {
 			Color c = getPieceColor(board.getPosition(row, col));
 			g.setColor(c);
-			//setPieceColor(p,c);
 			g.fillOval(x + 4, y + 4, _CELL_WIDTH - 8, _CELL_HEIGHT - 8);
 			g.setColor(Color.black);
 			g.drawOval(x + 4, y + 4, _CELL_WIDTH - 8, _CELL_HEIGHT - 8);

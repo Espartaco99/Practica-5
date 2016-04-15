@@ -3,10 +3,12 @@ package es.ucm.fdi.tp.practica5.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import es.ucm.fdi.tp.basecode.bgame.Utils;
 import es.ucm.fdi.tp.basecode.bgame.control.Controller;
 import es.ucm.fdi.tp.basecode.bgame.control.Player;
 import es.ucm.fdi.tp.basecode.bgame.model.Board;
@@ -43,7 +45,16 @@ public abstract class RectBoardSwingView extends SwingView {
 			}
 			@Override
 			protected Color getPieceColor(Piece p) {
-				return RectBoardSwingView.this.getPieceColor(p);
+				//Color for obstacles
+				
+				//Mirar para poder usar colorsGenerator para coger el color
+				if (RectBoardSwingView.this.getPieceColor(p) == null){
+					return Color.ORANGE;
+				}
+				else{
+					return RectBoardSwingView.this.getPieceColor(p);
+				}
+				
 				
 			// get the color from the colours table, and if not
 			// available (e.g., for obstacles) set it to have a color
@@ -51,8 +62,15 @@ public abstract class RectBoardSwingView extends SwingView {
 			
 			@Override
 			protected boolean isPlayerPiece(Piece p) {
-				return rootPaneCheckingEnabled;
-			// return true if p is a player piece, false if not (e.g, an obstacle)
+				List<Piece> pieces = RectBoardSwingView.this.getPieces();
+				//If the piece is not on the list is an obstacle
+				for (int i =0; i < pieces.size(); i++){
+					//If the piece is on the list, we stop the iteration and return true
+					if (p.equals(pieces.get(i))){
+						return true;
+					}
+				}
+				return false;
 			}
 
 		};
@@ -61,8 +79,6 @@ public abstract class RectBoardSwingView extends SwingView {
 	}
 	@Override
 	protected void redrawBoard() {
-		// ask boardComp to redraw the board
-		//boardComp.redraw();
 		boardComp.redraw(getBoard()); 
 	}
 	
