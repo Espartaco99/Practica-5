@@ -58,9 +58,12 @@ public abstract class BoardComponent extends JComponent {
 			}
 
 			@Override
+			//HACER TODO EL MOVIMIENTO DE PIEZAS
 			public void mouseClicked(MouseEvent e) {
 				System.out.println("Button" + e.getButton() + " Clicked at"
 						+ "(" + e.getX() + "," + e.getY() + ")");
+				System.out.println(e.getY()/  _CELL_HEIGHT + " " + e.getX() /  _CELL_WIDTH);
+				BoardComponent.this.mouseClicked(e.getY() / _CELL_HEIGHT, e.getX() / _CELL_WIDTH, e.getButton());
 			}
 		});
 		this.setSize(new Dimension(rows * _CELL_HEIGHT, cols * _CELL_WIDTH));
@@ -82,12 +85,24 @@ public abstract class BoardComponent extends JComponent {
 		int y = row * _CELL_HEIGHT;
 		g.setColor(Color.LIGHT_GRAY);
 		g.fillRect(x + 2, y + 2, _CELL_WIDTH - 4, _CELL_HEIGHT - 4);
-		if (board != null && board.getPosition(row, col) != null) {
-			Color c = getPieceColor(board.getPosition(row, col));
-			g.setColor(c);
-			g.fillOval(x + 4, y + 4, _CELL_WIDTH - 8, _CELL_HEIGHT - 8);
-			g.setColor(Color.black);
-			g.drawOval(x + 4, y + 4, _CELL_WIDTH - 8, _CELL_HEIGHT - 8);
+		Piece p = board.getPosition(row, col);
+		if (board != null && p != null) {
+			//Draw Pieces
+			if (isPlayerPiece(p)){
+				Color c = getPieceColor(p);
+				g.setColor(c);
+				g.fillOval(x + 4, y + 4, _CELL_WIDTH - 8, _CELL_HEIGHT - 8);
+				g.setColor(Color.black);
+				g.drawOval(x + 4, y + 4, _CELL_WIDTH - 8, _CELL_HEIGHT - 8);
+			}
+			//Draw Obstacles
+			else {
+				Color c = getPieceColor(p);
+				g.setColor(c);
+				g.fillRect(x + 4, y + 4, _CELL_WIDTH - 8, _CELL_HEIGHT - 8);
+				g.setColor(Color.black);
+				g.drawRect(x + 4, y + 4, _CELL_WIDTH - 8, _CELL_HEIGHT - 8);
+			}
 		}
 	}
 

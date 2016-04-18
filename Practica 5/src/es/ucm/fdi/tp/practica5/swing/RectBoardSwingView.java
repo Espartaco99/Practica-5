@@ -1,17 +1,10 @@
 package es.ucm.fdi.tp.practica5.swing;
 
-import java.awt.BorderLayout;
+
 import java.awt.Color;
-import java.awt.GridLayout;
 import java.util.List;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
-import es.ucm.fdi.tp.basecode.bgame.Utils;
 import es.ucm.fdi.tp.basecode.bgame.control.Controller;
 import es.ucm.fdi.tp.basecode.bgame.control.Player;
-import es.ucm.fdi.tp.basecode.bgame.model.Board;
 import es.ucm.fdi.tp.basecode.bgame.model.GameObserver;
 import es.ucm.fdi.tp.basecode.bgame.model.Observable;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
@@ -22,18 +15,15 @@ public abstract class RectBoardSwingView extends SwingView {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final Color OBSTACLES_COLOR = Color.ORANGE;
 	private BoardComponent boardComp;
-	private boolean mouseActive = false;
+	private boolean mouseActive = true;
 	
 	public RectBoardSwingView(Observable<GameObserver> g, Controller c, Piece localPiece, Player random, Player ai) {
 		super(g, c, localPiece, random, ai);
 	}
 	@Override
 	protected void initBoardGui() {
-		//Crear la vista del tablero y pasarla a SwingView con la funcion: 
-		//final protected void setBoardArea(JComponent c);
-		//NO se como hacerlo porque getBoard NO funciona, no esta inicializado
-		//Tengo que inicializar con onGameStart
 		boardComp = new BoardComponent() {
 			/**
 			 * 
@@ -41,6 +31,7 @@ public abstract class RectBoardSwingView extends SwingView {
 			private static final long serialVersionUID = 1L;
 			@Override
 			protected void mouseClicked(int row, int col, int mouseButton) {
+				//MouseButton: 1 = left click, 2 = middle click, 3 = right click
 				handleMouseClick(row,col,mouseButton);
 			}
 			@Override
@@ -49,7 +40,7 @@ public abstract class RectBoardSwingView extends SwingView {
 				
 				//Mirar para poder usar colorsGenerator para coger el color
 				if (RectBoardSwingView.this.getPieceColor(p) == null){
-					return Color.ORANGE;
+					return OBSTACLES_COLOR;
 				}
 				else{
 					return RectBoardSwingView.this.getPieceColor(p);
@@ -87,8 +78,6 @@ public abstract class RectBoardSwingView extends SwingView {
 
 	@Override
 	protected void activateBoard() {
-		//Añadir mensaje de que hacer con el juego, mirar como acceder a los elementos del super
-		//super.
 		mouseActive = true;
 	}
 

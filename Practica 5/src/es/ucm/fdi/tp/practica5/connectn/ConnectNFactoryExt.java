@@ -33,7 +33,7 @@ public class ConnectNFactoryExt extends ConnectNFactory {
 		SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					GameObserver o = new ConnectNSwingView(g,c,viewPiece, random, ai);
+					new ConnectNSwingView(g,c,viewPiece, random, ai);
 					//Da problemas porque llama 2 veces a todos los metodos de los observadores
 //					g.addObserver(o);
 				}

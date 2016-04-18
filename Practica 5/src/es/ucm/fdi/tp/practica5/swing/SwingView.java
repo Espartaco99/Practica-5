@@ -49,16 +49,12 @@ import es.ucm.fdi.tp.practica5.Main.PlayerMode;
 public abstract class SwingView extends JFrame implements GameObserver {
 	
 	private Controller ctrl;
-	//Used for the multiviews
+	//Used for the multiviews, piece with is the view
 	private Piece localPiece;
 	private Piece turn;
-	//De donde saco el tablero
 	private Board board;
-	//De donde saco la lista de piezas
 	private List<Piece> pieces;
-	//De donde saco toda la paleta de colores
 	private Map<Piece, Color> pieceColors;
-	//Manejar PlayerMode, no me gusta el enumerado
 	private Map<Piece, PlayerMode> playerTypes;
 	private String gameDesc;
 	private JPanel ctrlPanel;
@@ -69,7 +65,8 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private MyTableModel MyTable;
 	private Player randPlayer;
 	private Player aiPlayer;
-	
+	//Used to disable or enable panel components whether is a movement or not
+	private boolean movementExecution;
 	
 	/**
 	 * 
@@ -86,8 +83,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		this.localPiece = localPiece;
 		this.playerTypes = new HashMap<>();
 		this.pieceColors = new HashMap<>();
-		
-		
 		this.randPlayer = randPlayer;
 		this.aiPlayer = aiPlayer;
 		initGUI();
@@ -102,12 +97,9 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		private static final long serialVersionUID = 1L;
 
 		private String[] colNames;
-		
-		private List<Integer> numPieces;
 
 		public MyTableModel() {
 			this.colNames = new String[] { "Player", "Mode", "#Pieces" };
-		
 		}
 
 		@Override
@@ -128,21 +120,28 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			if (columnIndex == 0) {
-				return rowIndex;
-			} else {
-				//COMO HACER ESTO PARA QUE ENVIE A LAS 2 COLUMNAS
-				return playerTypes.get(pieces.get(rowIndex)).getDesc();
-//				&& board.getPieceCount(pieces.get(rowIndex))
+				return pieces.get(rowIndex);
+			}
+			else if (columnIndex == 1){
+				//Shows only the mode to the correct view
+				if (localPiece == null || localPiece == pieces.get(rowIndex)){
+					return playerTypes.get(pieces.get(rowIndex)).getDesc();					
+				}
+				else{
+					return null;
+				}
+			}
+			else {
+				return board.getPieceCount(pieces.get(rowIndex));
 			}
 		}
 		
 		public void refresh() {
-			fireTableStructureChanged();
 			fireTableDataChanged();
+			
 		}
 
 	};
-	
 	
 	
 	/**
@@ -151,7 +150,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private void initGUI(){ 
 		this.setSize(400, 200);
 		this.setVisible(true);
-		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		//Set the panel to be the one of the swingView
 		mainPanel = new JPanel( new BorderLayout(5,5) );
@@ -161,19 +159,18 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		//Alignment to ensure all the components are in the Y axis
 		ctrlPanel.setLayout(new BoxLayout(ctrlPanel, BoxLayout.Y_AXIS));
 		
-		//Hacer funciones para añadir cada componente, completar el codigo de estas funciones
 		addStatusMessages();
 		addPlayerInformation();
 		addPieceColors();
 		addPlayerModes();
-		addAutomaticMoves();
+		//If there is no random or ai player, there is no need to create an automatic moves panel
+		if (randPlayer != null || aiPlayer != null){
+			addAutomaticMoves();
+		}
 		addQuitRestartButtons();
 		mainPanel.add(ctrlPanel, BorderLayout.LINE_END);
 		initBoardGui();
-		
-		this.pack();
 		this.setVisible(true);
-		
 	}
 	
 	/**
@@ -182,16 +179,69 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private void addAutomaticMoves() {
 		JPanel movesPanel = new JPanel();
 		//Random Button
-		JButton random = new JButton("Random");
-		movesPanel.add(random);
-		//Random Button
-		JButton intelligent = new JButton("Intelligent");
-		movesPanel.add(intelligent);
+		if (randPlayer != null){
+			JButton random = new JButton("Random");
+			random.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					//If the mode is not manual or is a movement or the player is not in his turn, the button does nothing
+					if ((localPiece == null || localPiece == turn) && playerTypes.get(turn) == PlayerMode.MANUAL && !movementExecution){
+						ctrl.makeMove(randPlayer);
+					}
+				}
+			});
+			movesPanel.add(random);	
+		}
+		if (aiPlayer != null){
+			//Intelligent Button
+			JButton intelligent = new JButton("Intelligent");
+			intelligent.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					//If the mode is not manual or is a movement or the player is not in his turn, the button does nothing
+					if ((localPiece == null || localPiece == turn) && playerTypes.get(turn) == PlayerMode.MANUAL && !movementExecution){
+						ctrl.makeMove(aiPlayer);					
+					}
+				}
+			});
+			movesPanel.add(intelligent);
+		}
+		
 		//Border
 		Border b = BorderFactory.createLineBorder(Color.black, 2);
 		movesPanel.setBorder(BorderFactory.createTitledBorder(b, "Automatic Modes"));
-		//movesPanel.getAlignmentY();
 		ctrlPanel.add(movesPanel);
+	}
+	
+	/**
+	 * Name modes, based of player modes (manual, random or intelligent.)
+	 * <p>
+	 * Modos de juego, badado en player modes.
+	 */
+	
+	 enum nameModes {
+		MANUAL(PlayerMode.MANUAL, "Manual"), INTELLIGENT(PlayerMode.AI, "Intelligent"), RANDOM(PlayerMode.RANDOM, "Random");
+
+		private PlayerMode mode;
+		private String desc;
+
+		nameModes(PlayerMode mode, String desc) {
+			this.mode = mode;
+			this.desc = desc;
+		}
+		
+		public PlayerMode getPlayerMode(){
+			return this.mode;
+		}
+
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		@Override
+		public String toString() {
+			return this.desc;
+		}
 	}
 	
 	/**
@@ -203,22 +253,26 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			JPanel optionsPanel = new JPanel();
 			listPieces1 = new JComboBox<Piece>();
 			optionsPanel.add(listPieces1);
-			//Modes ComboBox, 
 			
-			//HACER CON UN ENUMERADO COMO PLAYERMODE, QUITAR STRING
-			String nameModes[] = {"Manual", "Intelligent", "Random"};
-			JComboBox<String> listModes = new JComboBox<>(nameModes);
+			//MIRAR EL IMPORTANTE
+			JComboBox<nameModes> listModes = new JComboBox<>(nameModes.values());
 			optionsPanel.add(listModes);
 			//Set Button
 			JButton set = new JButton("Set");
-			//Cambiar cosas de aqui
 			set.addActionListener(new ActionListener() {
 				@Override
+				//MIRAR EL CASTING, POR SI NO LE GUSTA
 				public void actionPerformed(ActionEvent e) {
 					//All the items in the listPieces are of the Piece type, so the casting wont fail
-					Piece p = (Piece)listPieces1.getSelectedItem();
-					listModes.getSelectedItem();
-					//SwingView.this.playerTypes.
+					Piece p = (Piece) listPieces1.getSelectedItem();
+					nameModes mode = (nameModes) listModes.getSelectedItem();
+					playerTypes.put(p, mode.getPlayerMode());
+					MyTable.refresh();
+					if (mode != nameModes.MANUAL){
+						deActivateBoard();
+						movementExecution = true;
+						decideMakeAutomaticMove();
+					}
 				}
 			});
 			optionsPanel.add(set);
@@ -239,7 +293,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		
 		JButton chooseColor = new JButton("Choose Color");
 		chooseColor.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//All the items in the listPieces are of the Piece type, so the casting wont fail
@@ -273,12 +326,11 @@ public abstract class SwingView extends JFrame implements GameObserver {
 				Component comp = super.prepareRenderer(renderer, row, col);
 				// the color of row 'row' is taken from the colors table, if
 				// 'null' setBackground will use the parent component color.
-				comp.setBackground(pieceColors.get(row));
+				comp.setBackground(pieceColors.get(pieces.get(row)));
 				return comp;
 			}
 		};
 		
-		//Falta cambiar el color a la tabla
 		Border b = BorderFactory.createLineBorder(Color.black, 2);
 		JScrollPane scrollPane = new JScrollPane(table);
 		//Used to resize the scrollPane because its too big by default
@@ -317,39 +369,61 @@ public abstract class SwingView extends JFrame implements GameObserver {
 
 		JButton quit = new JButton("Quit");
 		quit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { quit(); }
+			public void actionPerformed(ActionEvent e) { 
+				if (turn == localPiece || localPiece == null){
+					quit(); 
+				}
+			}
 		});
 		//Dejar todas las funciones tal como estan
-				this.addWindowListener(new WindowListener() {
-					public void windowClosing(WindowEvent e) { quit(); }
+		this.addWindowListener(new WindowListener() {
+			public void windowClosing(WindowEvent e) { 
+				//Como hacer que este desabilitado durante la ejecucion de un movimiento
+				if (playerTypes.get(turn) == PlayerMode.MANUAL && !movementExecution){
+					quit(); 
+				}
+			}
 
-					@Override
-					public void windowActivated(WindowEvent e) {
-					}
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
 
-					@Override
-					public void windowClosed(WindowEvent e) {
-					}
+			@Override
+			public void windowClosed(WindowEvent e) {
+			}
 
-					@Override
-					public void windowDeactivated(WindowEvent e) {
-					}
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
 
-					@Override
-					public void windowDeiconified(WindowEvent e) {
-					}
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+			}
 
-					@Override
-					public void windowIconified(WindowEvent e) {
-					}
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
 
-					@Override
-					public void windowOpened(WindowEvent e) {
-					}
-				});
+			@Override
+			public void windowOpened(WindowEvent e) {
+			}
+		});
 				
 		p.add(quit);
 		JButton restart = new JButton("Restart");
+		restart.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (playerTypes.get(turn) == PlayerMode.MANUAL && !movementExecution){
+					SwingView.this.storyArea = new JTextArea();
+					SwingView.this.listPieces1 = new JComboBox<Piece>();
+					SwingView.this.listPieces2 = new JComboBox<Piece>();
+					activateBoard();
+					addMsg("Restarting the game\n");
+					ctrl.restart();
+				}
+			}
+		});
 		p.add(restart);
 		ctrlPanel.add(p);
 	}
@@ -385,17 +459,22 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		}
 	}
 	
-	@SuppressWarnings("unused")
+	
 	private void decideMakeAutomaticMove() { 
 		//If the player belong to this view 
-		if (localPiece == turn){
+		if (localPiece == turn || localPiece == null){
 			//and the mode is random or AI, we make the move
 			if (playerTypes.get(turn) == PlayerMode.RANDOM){
+				deActivateBoard();
+				movementExecution = true;
 				ctrl.makeMove(randPlayer);
 			}
 			else if (playerTypes.get(turn) == PlayerMode.AI){
+				deActivateBoard();
+				movementExecution = true;
 				ctrl.makeMove(aiPlayer);
 			}
+			activateBoard();
 		}
 		
 	}
@@ -409,7 +488,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		int n = JOptionPane.showOptionDialog(new JFrame(), "Are sure you want to quit?", "Quit",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 		if (n == 0) {
-			// finalize your app
+			//finalize your app
 			System.exit(0);
 		}
 	}
@@ -421,58 +500,78 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		this.turn = turn;
 		this.gameDesc = gameDesc;
 		SwingUtilities.invokeLater(new Runnable() {
-			//Se llama solo por el juego
 			public void run() {
 				handleGameStart(); 
+			}
+			/**
+			 * Adds the main boxes and elements in the panel previously made by initGUI
+			 */
+			private void handleGameStart() {
+				//HashMap used for playerTypes		
+				for( Piece p : pieces ) {
+					if (localPiece == null || p == localPiece){
+						listPieces1.addItem(p);
+						listPieces2.addItem(p);				
+					}
+					SwingView.this.playerTypes.put(p, PlayerMode.MANUAL);
+					//Put random colors at the start
+					SwingView.this.pieceColors.put(p, Utils.randomColor());
+				}
+				//Only the player who has the turn can move a piece
+				if (localPiece != null && localPiece != pieces.get(0)){
+					deActivateBoard();
+				}
+				listPieces1.setSelectedIndex(0);
+				listPieces2.setSelectedIndex(0);
+				String story = "Turn for ";
+				if (pieces.get(0) == localPiece){
+					story += "You! ";
+				}
+				story += pieces.get(0).toString() + "\n";
+				storyArea.append(story);
+				if (localPiece == null){
+					SwingView.super.setTitle("Board Games: " + gameDesc);
+				}
+				else{
+					SwingView.super.setTitle("Board Games: " + gameDesc + " (" + localPiece + ")");					
+				}
+				movementExecution = false;
+				MyTable.refresh();
+				redrawBoard();
 			}
 		});
 	}
 	
 	
-	/**
-	 * Adds the main boxes and elements in the panel previously made by initGUI
-	 */
-	//NO SE PORQUE SE LLAMA DOS VECES A LA FUNCION
-	private void handleGameStart() {
-		//HashMap used for playerTypes		
-		for( Piece p : pieces ) {
-			listPieces1.addItem(p);
-			listPieces2.addItem(p);
-			this.playerTypes.put(p, PlayerMode.MANUAL);
-			//Put random colors at the start
-			this.pieceColors.put(p, Utils.randomColor());
-			
-			//NO FUNCIONA COMO DEBERIA, imprime lo mismo que 
-			if (board.getPieceCount(p) != null){
-				//MyTable.addNumPieces(board.getPieceCount(p));
-			}
-		}
-		MyTable.refresh();
-		listPieces1.setSelectedIndex(0);
-		listPieces2.setSelectedIndex(0);
-		String story = "Turn for " + pieces.get(0).toString() + "\n";
-		storyArea.append(story);
-		super.setTitle("Board Games: " + gameDesc);
-		//rellenar todo lo que se ha inicializado
-		redrawBoard();
-	}
+	
 	
 	//No usar JOptionPane.showMessageDialog, meter estos mensajes en el text area de addStatusMessages()
 	public void onGameOver(final Board board, final State state, final Piece winner) {
 		this.board = board;
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() { 
+				deActivateBoard();
+				repaint();
+				storyArea.append("Game Over!!\n");
+				storyArea.append("Game Status: " + state + "\n");
 				//Mostrar mensaje de victoria o empate
-				if (state == State.Draw){
-					storyArea.append("You have draw, try it again!" + "\n");
-				}
-				//If someone has won and the piece is part of the player, show him the victory message
-				else if (state == State.Won && turn == winner){
-					storyArea.append("You have won, congratulations!" + "\n");
+				if (localPiece == null){
+					storyArea.append(winner + " have won, congratulations!\n");
 				}
 				else {
-					storyArea.append("You have lost, try it again!" + "\n");
+					if (state == State.Draw){
+						storyArea.append("You have draw, try it again!\n");
+					}
+					//If someone has won and the piece is part of the player, show him the victory message
+					else if (state == State.Won && localPiece == winner){
+						storyArea.append(turn + " have won, congratulations!\n");
+					}
+					else {
+						storyArea.append("You have lost, try it again!\n");
+					}
+					
 				}
+				movementExecution = false;
 				//handleOnGameOver(); 
 			}
 		});
@@ -484,13 +583,15 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			public void run() { 
 				handleOnMoveStart(); 
 			}
-
 			private void handleOnMoveStart() {
-				// TODO Auto-generated method stub
-				
+				deActivateBoard();
+				movementExecution = true;
 			}
+			
 		});
 	}
+	
+	
 	public void onMoveEnd(Board board, Piece turn, boolean success) {
 		this.board = board;
 		this.turn = turn;
@@ -500,8 +601,11 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			}
 
 			private void handleOnMoveEnd() {
-				// TODO Auto-generated method stub
-				
+				//when the move is done, the piece cant move until his turn comes
+//				if (success && localPiece == turn){
+//					deActivateBoard();
+//				}
+				movementExecution = false;
 			}
 		});
 	}
@@ -512,10 +616,16 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			public void run() { 
 				handleOnChangeTurn(); 
 			}
-
 			private void handleOnChangeTurn() {
-				// TODO Auto-generated method stub
-				
+				String story = "Turn for ";
+				if (turn == localPiece){
+					story += "You! ";
+					activateBoard();
+				}
+				story += turn + "\n";
+				addMsg(story);
+				repaint();
+				decideMakeAutomaticMove();
 			}
 		});
 	}
@@ -527,10 +637,12 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			}
 
 			private void handleOnError() {
-				JFrame frame = new JFrame();
-				JOptionPane.showMessageDialog(frame, msg, "ERROR", JOptionPane.ERROR_MESSAGE);
+				if (turn == localPiece || localPiece == null){
+					JFrame frame = new JFrame();
+					JOptionPane.showMessageDialog(frame, msg, "ERROR", JOptionPane.ERROR_MESSAGE);
+				}					
 			}
 		});
 	}
-	
+
 }

@@ -23,23 +23,24 @@ public class AtaxxSwingView extends RectBoardSwingView {
 	protected void handleMouseClick(int rowOrigin, int colOrigin, int mouseButton) {
 		//Allow the moves of the mouse get captured, used in case the state or phase of the game dont allow us make a move
 		if (getMouseActive()){
-			//Obtener la fila y columna destino desde el raton
-			int rowDest = 0, colDest = 0;
-			player.setMove(rowOrigin, colOrigin, rowDest, colDest);
-			decideMakeManualMove(player);
+			addMsg("Left Click on the destination position, right click to cancel\n");
+			//If we click right mouse, we cancel the move
+			if (mouseButton != 3){
+				//Obtener la fila y columna destino desde el raton
+				int rowDest = 0, colDest = 0;
+				player.setMove(rowOrigin, colOrigin, rowDest, colDest);
+				decideMakeManualMove(player);				
+			}
 		}
 		
 		
 	}
-	@Override
-	protected void activateBoard() {
-	// - declare the board active, so handleMouseClick accepts moves
-	// - add corresponding message to the status messages indicating
-	// what to do for making a move, etc.
-	}
 	
 	@Override
-	protected void deActivateBoard() {
-	// declare the board inactive, so handleMouseClick rejects moves
+	protected void activateBoard() {
+	// - add corresponding message to the status messages indicating
+	// what to do for making a move, etc.
+		super.activateBoard();
+		addMsg("Click on an origin piece\n");
 	}
 }

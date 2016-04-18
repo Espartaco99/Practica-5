@@ -30,16 +30,14 @@ public class ConnectNSwingView extends RectBoardSwingView {
 		
 		
 	}
+	//I dont override deActivateBoard cause both do the same
 	@Override
 	protected void activateBoard() {
-	// - declare the board active, so handleMouseClick accepts moves
 	// - add corresponding message to the status messages indicating
 	// what to do for making a move, etc.
+		super.activateBoard();
+		addMsg("Click on an empty cell\n");
 	}
 	
-	@Override
-	protected void deActivateBoard() {
-	// declare the board inactive, so handleMouseClick rejects moves
-	}
-	
+
 }

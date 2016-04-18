@@ -110,7 +110,7 @@ public class Main {
 	 * Modos de juego.
 	 */
 	public enum PlayerMode {
-		MANUAL("m", "Manual"), RANDOM("r", "Random"), AI("a", "Automatics");
+		MANUAL("m", "Manual"), RANDOM("r", "Random"), AI("a", "Intelligent");
 
 		private String id;
 		private String desc;
@@ -781,6 +781,7 @@ public class Main {
 			break;
 		case WINDOW:
 			//Creates a view for each piece, else creates the general view
+			c = new Controller(g, pieces);
 			if (multiviews){
 				for (Piece p : pieces) {
 					gameFactory.createSwingView(g, c, p, gameFactory.createRandomPlayer(), gameFactory.createAIPlayer(aiPlayerAlg));
@@ -790,7 +791,6 @@ public class Main {
 				gameFactory.createSwingView(g, c, null, gameFactory.createRandomPlayer(), gameFactory.createAIPlayer(aiPlayerAlg));
 			}
 			//Para esto se ha creado la clase swingControler
-			c = new Controller(g, pieces);
 			break;
 		default:
 			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
