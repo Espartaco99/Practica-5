@@ -66,7 +66,7 @@ public abstract class BoardComponent extends JComponent {
 				BoardComponent.this.mouseClicked(e.getY() / _CELL_HEIGHT, e.getX() / _CELL_WIDTH, e.getButton());
 			}
 		});
-		this.setSize(new Dimension(rows * _CELL_HEIGHT, cols * _CELL_WIDTH));
+		this.setPreferredSize(new Dimension(400,400));
 		repaint();
 	}
 

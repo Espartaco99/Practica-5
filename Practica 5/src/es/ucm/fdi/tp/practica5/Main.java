@@ -130,7 +130,7 @@ public class Main {
 
 		@Override
 		public String toString() {
-			return id;
+			return desc;
 		}
 	}
 
@@ -139,7 +139,7 @@ public class Main {
 	 * <p>
 	 * Juego por defecto.
 	 */
-	final private static GameInfo DEFAULT_GAME = GameInfo.CONNECTN;
+	final private static GameInfo DEFAULT_GAME = GameInfo.Ataxx;
 
 	/**
 	 * default view to use.

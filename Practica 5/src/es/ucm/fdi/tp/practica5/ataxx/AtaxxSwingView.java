@@ -12,28 +12,38 @@ public class AtaxxSwingView extends RectBoardSwingView {
 	 */
 	private static final long serialVersionUID = 1L;
 	private AtaxxSwingPlayer player;
+	private boolean hasFirstClick; 
+	private int rowOrigin;
+	private int colOrigin;
+	
 	
 	public AtaxxSwingView(Observable<GameObserver> g, Controller c, Piece localPiece, Player random, Player ai) {
 		super(g, c, localPiece, random, ai);
 		player = new AtaxxSwingPlayer();
-		
+		this.hasFirstClick = false;
 	}
 
 	@Override
-	protected void handleMouseClick(int rowOrigin, int colOrigin, int mouseButton) {
+	protected void handleMouseClick(int row, int col, int mouseButton) {
 		//Allow the moves of the mouse get captured, used in case the state or phase of the game dont allow us make a move
 		if (getMouseActive()){
-			addMsg("Left Click on the destination position, right click to cancel\n");
-			//If we click right mouse, we cancel the move
-			if (mouseButton != 3){
+			//If is the second click, i move
+			if (hasFirstClick) {
 				//Obtener la fila y columna destino desde el raton
-				int rowDest = 0, colDest = 0;
-				player.setMove(rowOrigin, colOrigin, rowDest, colDest);
-				decideMakeManualMove(player);				
+				hasFirstClick = false;
+				//If we click right mouse, we cancel the move
+				if (mouseButton != 3){
+					player.setMove(rowOrigin, colOrigin, row, col);
+					decideMakeManualMove(player);
+				}
+			} else {
+				//First Click
+				rowOrigin = row;
+				colOrigin = col;
+				hasFirstClick = true;
+				addMsg("Left Click on the destination position, right click to cancel\n");
 			}
 		}
-		
-		
 	}
 	
 	@Override
