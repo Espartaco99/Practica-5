@@ -39,8 +39,6 @@ public class AtaxxFactoryExt extends AtaxxFactory {
 			@Override
 			public void run() {
 				new AtaxxSwingView(g,c,viewPiece, random, ai);
-				//Da problemas porque llama 2 veces a todos los metodos de los observadores
-//				g.addObserver(o);
 			}
 		});
 	}

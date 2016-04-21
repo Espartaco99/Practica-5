@@ -42,7 +42,9 @@ import es.ucm.fdi.tp.practica5.Main.PlayerMode;
 public abstract class SwingView extends JFrame implements GameObserver {
 	
 	private Controller ctrl;
-	//Used for the multiviews, piece with is the view
+	/**
+	 * Used for the multiviews, piece with is the view
+	 */
 	private Piece localPiece;
 	private Piece turn;
 	private Board board;
@@ -52,13 +54,21 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	private String gameDesc;
 	private JPanel ctrlPanel;
 	private JPanel mainPanel;
+	/**
+	 * Used for the combo box affected by the set button
+	 */
 	private JComboBox<Piece> listPieces1;
+	/**
+	 * Used for the combo box affected by the choose colors button
+	 */
 	private JComboBox<Piece> listPieces2;
 	private JTextArea storyArea;
 	private MyTableModel MyTable;
 	private Player randPlayer;
 	private Player aiPlayer;
-	//Used to disable or enable panel components whether is a movement or not
+	/**
+	 * Used to disable or enable panel components whether is a movement or not
+	 */
 	private boolean buttonsDisabled;
 	
 	/**
@@ -269,7 +279,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 				if (mode != nameModes.MANUAL && !buttonsDisabled){
 					deActivateBoard();
 					decideMakeAutomaticMove();
-					//buttonsDisabled = true;
 				}
 			}
 		});
@@ -344,7 +353,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	 */
 	private void addStatusMessages() {
 		Border b = BorderFactory.createLineBorder(Color.black, 2);
-		//String story = "I sexually Identify as an Attack Helicopter. Ever since I was a boy I dreamed of soaring over the oilfields dropping hot sticky loads on disgusting foreigners. People say to me that a person being a helicopter is Impossible and I’m fucking retarded but I don’t care, I’m beautiful. I’m having a plastic surgeon install rotary blades, 30 mm cannons and AMG-114 Hellfire missiles on my body. From now on I want you guys to call me “Apache” and respect my right to kill from above and kill needlessly. If you can’t accept me you’re a heliphobe and need to check your vehicle privilege. Thank you for being so understanding.";
 		storyArea = new JTextArea();
 		storyArea.setEditable(false);
 		storyArea.setLineWrap(true);
@@ -367,7 +375,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		quit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { quit(); }
 		});
-		//Dejar todas las funciones tal como estan
+		
 		this.addWindowListener(new WindowListener() {
 			public void windowClosing(WindowEvent e) { 
 				
@@ -408,7 +416,9 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			restart.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (playerTypes.get(turn) == PlayerMode.MANUAL && !buttonsDisabled){
+					//If the turn is manual and the button is not disabled or if the game is over 
+					//(turn = null in OnGameOver) we can restart
+					if ((playerTypes.get(turn) == PlayerMode.MANUAL && !buttonsDisabled) || turn == null){
 						activateBoard();
 						addMsg("Restarting the game\n");
 						ctrl.restart();
@@ -433,19 +443,19 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		storyArea.append(msg);
 	}
 	
-	//Lo recibes de ConnectNSwingView, debe de estar bien
 	final protected void decideMakeManualMove(Player manualPlayer) { 
-		//If the move is null, it throws and exception, we just catch it and do nothing casue there isnt a move 
+		//If the move is null it throws an exception, we just catch it and do nothing casue there isnt a move 
 		try{
 			ctrl.makeMove(manualPlayer);			
 		}
 		catch (Exception e){
-			//e.printStackTrace();
-			activateBoard();
+			
 		}
 	}
 	
-	
+	/**
+	 * It will make the move only if the player is not manual and the , else it wont do anything
+	 */
 	private void decideMakeAutomaticMove() { 
 		//If the player belong to this view 
 		if (localPiece == turn || localPiece == null){
@@ -453,14 +463,26 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			if (playerTypes.get(turn) == PlayerMode.RANDOM && !buttonsDisabled){
 				deActivateBoard();
 				buttonsDisabled = true;
-				ctrl.makeMove(randPlayer);
+				//If the move is null it throws an exception, we just catch it and do nothing casue there isnt a move 
+				try{			
+					ctrl.makeMove(randPlayer);
+				}
+				catch (Exception e){
+				}
+				activateBoard();
 			}
 			else if (playerTypes.get(turn) == PlayerMode.AI && !buttonsDisabled){
 				deActivateBoard();
 				buttonsDisabled = true;
-				ctrl.makeMove(aiPlayer);
+				//If the move is null it throws an exception, we just catch it and do nothing casue there isnt a move 
+				try{			
+					ctrl.makeMove(aiPlayer);
+
+				}
+				catch (Exception e){
+				}
+				activateBoard();
 			}
-			activateBoard();
 		}
 		
 	}
@@ -498,20 +520,18 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	 */
 	private void handleGameStart() {
 		//HashMap used for playerTypes		
+		listPieces1.removeAllItems();
+		listPieces2.removeAllItems();
 		for( Piece p : pieces ) {
+			listPieces2.addItem(p);
 			if (localPiece == null || p == localPiece){
-				if (listPieces1.getItemAt(0) == null){
-					listPieces1.addItem(p);
-				}
-				if (listPieces2.getItemAt(0) == null){
-					listPieces2.addItem(p);									
-				}
+					listPieces1.addItem(p);				
 			}
 			SwingView.this.playerTypes.put(p, PlayerMode.MANUAL);
 			//Put random colors at the start
 			SwingView.this.pieceColors.put(p, Utils.randomColor());
 		}
-		//Only the player who has the turn can move a piece
+		//Only the player who has the turn can move a piece, in this case the first player
 		if (localPiece != null && localPiece != pieces.get(0)){
 			deActivateBoard();
 		}
@@ -536,8 +556,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	}
 	
 	
-	
-	//No usar JOptionPane.showMessageDialog, meter estos mensajes en el text area de addStatusMessages()
 	public void onGameOver(final Board board, final State state, final Piece winner) {
 		this.board = board;
 		SwingUtilities.invokeLater(new Runnable() {
@@ -548,28 +566,33 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	}
 	
 	private void handleOnGameOver(final State state, final Piece winner) {
+		//The game is over, so there is no turn for anyone
+		this.turn = null;
 		deActivateBoard();
 		repaint();
 		storyArea.append("Game Over!!\n");
 		storyArea.append("Game Status: " + state + "\n");
-		//Mostrar mensaje de victoria o empate
+		//Shows the winner in the view
 		if (localPiece == null){
-			storyArea.append(winner + " have won, congratulations!\n");
+			if (winner != null)
+				storyArea.append(winner + " have won, congratulations!\n");
+			else {
+				storyArea.append("You have draw, try it again!\n");
+			}
 		}
+		//In case of multiviews, shows different messages
 		else {
 			if (state == State.Draw){
 				storyArea.append("You have draw, try it again!\n");
 			}
 			//If someone has won and the piece is part of the player, show him the victory message
 			else if (state == State.Won && localPiece == winner){
-				storyArea.append(turn + " have won, congratulations!\n");
+				storyArea.append("(You!) " + winner +  " have won, congratulations!\n");
 			}
 			else {
 				storyArea.append("You have lost, try it again!\n");
 			}
-			
 		}
-		buttonsDisabled = true;
 	}
 
 	public void onMoveStart(Board board, Piece turn) {
@@ -597,11 +620,8 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			}
 		});
 	}
+	
 	private void handleOnMoveEnd() {
-		//when the move is done, the piece cant move until his turn comes
-	//				if (success && localPiece == turn){
-	//					deActivateBoard();
-	//				}
 		buttonsDisabled = false;
 	}
 
@@ -617,7 +637,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 	
 	private void handleOnChangeTurn() {
 		String story = "Turn for ";
-		if (turn == localPiece){
+		if (turn == localPiece || localPiece == null){
 			story += "You! ";
 			activateBoard();
 		}
@@ -625,13 +645,12 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		addMsg(story);
 		repaint();
 		decideMakeAutomaticMove();
-		
 	}
 
 	public void onError(String msg) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() { 
-				handleOnError(msg); 
+				handleOnError(msg);
 			}
 		});
 	}
@@ -640,6 +659,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		if (turn == localPiece || localPiece == null){
 			JFrame frame = new JFrame();
 			JOptionPane.showMessageDialog(frame, msg, "ERROR", JOptionPane.ERROR_MESSAGE);
+			addMsg(turn + " ");
 			activateBoard();
 		}					
 	}

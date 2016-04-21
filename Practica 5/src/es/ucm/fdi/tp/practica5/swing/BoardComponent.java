@@ -3,6 +3,8 @@ package es.ucm.fdi.tp.practica5.swing;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -22,8 +24,6 @@ public abstract class BoardComponent extends JComponent {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	//HAY QUE MIRAR extra en: Código para las practicas del segundo cuatrimestre
-	//Para la paleta de colores, mirar el paquete jcolor
 	public BoardComponent() {
 		initGUI();
 	}
@@ -58,11 +58,12 @@ public abstract class BoardComponent extends JComponent {
 			}
 
 			@Override
-			//HACER TODO EL MOVIMIENTO DE PIEZAS
 			public void mouseClicked(MouseEvent e) {
+				//Debug messages
 				System.out.println("Button" + e.getButton() + " Clicked at"
 						+ "(" + e.getX() + "," + e.getY() + ")");
 				System.out.println(e.getY()/  _CELL_HEIGHT + " " + e.getX() /  _CELL_WIDTH);
+				//The important call of the function
 				BoardComponent.this.mouseClicked(e.getY() / _CELL_HEIGHT, e.getX() / _CELL_WIDTH, e.getButton());
 			}
 		});
@@ -75,6 +76,9 @@ public abstract class BoardComponent extends JComponent {
 		if ( board == null ) return;
 		_CELL_WIDTH = this.getWidth() / cols;
 		_CELL_HEIGHT = this.getHeight() / rows;
+		//Used to make the border of the oval more appealing to the eyes, using the antialising
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		for (int i = 0; i < rows; i++)
 			for (int j = 0; j < cols; j++)
 				drawCell(i, j, g);

@@ -28,9 +28,6 @@ public class AtaxxSwingPlayer extends Player {
 	@Override
 	public GameMove requestMove(Piece p, Board board, List<Piece> pieces,
 			GameRules rules) {
-		GameMove move = new AtaxxMove(rowOrigin,colOrigin,rowDest, colDest, p);
-		System.out.println(move);
-
-		return move;
+		return new AtaxxMove(rowOrigin,colOrigin,rowDest, colDest, p);
 	}
 }

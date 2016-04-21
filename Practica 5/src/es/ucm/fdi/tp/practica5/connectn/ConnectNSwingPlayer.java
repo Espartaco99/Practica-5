@@ -25,10 +25,8 @@ public class ConnectNSwingPlayer extends Player {
 
 	@Override
 	public GameMove requestMove(Piece p, Board board, List<Piece> pieces,
-			GameRules rules) {
-		GameMove move = new ConnectNMove(row,col,p);
-		
-		return move;
+			GameRules rules) {	
+		return new ConnectNMove(row,col,p);
 	}
 
 }

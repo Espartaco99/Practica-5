@@ -37,18 +37,12 @@ public abstract class RectBoardSwingView extends SwingView {
 			@Override
 			protected Color getPieceColor(Piece p) {
 				//Color for obstacles
-				
-				//Mirar para poder usar colorsGenerator para coger el color
 				if (RectBoardSwingView.this.getPieceColor(p) == null){
 					return OBSTACLES_COLOR;
 				}
 				else{
 					return RectBoardSwingView.this.getPieceColor(p);
 				}
-				
-				
-			// get the color from the colours table, and if not
-			// available (e.g., for obstacles) set it to have a color
 			};
 			
 			@Override

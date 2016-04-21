@@ -19,8 +19,8 @@ public class AtaxxSwingView extends RectBoardSwingView {
 	
 	public AtaxxSwingView(Observable<GameObserver> g, Controller c, Piece localPiece, Player random, Player ai) {
 		super(g, c, localPiece, random, ai);
-		player = new AtaxxSwingPlayer();
 		this.hasFirstClick = false;
+		player = new AtaxxSwingPlayer();
 	}
 
 	@Override
@@ -29,12 +29,15 @@ public class AtaxxSwingView extends RectBoardSwingView {
 		if (getMouseActive()){
 			//If is the second click, i move
 			if (hasFirstClick) {
-				//Obtener la fila y columna destino desde el raton
+				//Reset the value of the field for the next move
 				hasFirstClick = false;
 				//If we click right mouse, we cancel the move
 				if (mouseButton != 3){
 					player.setMove(rowOrigin, colOrigin, row, col);
 					decideMakeManualMove(player);
+				}
+				else {
+					addMsg("Movement canceled\n");
 				}
 			} else {
 				//First Click
