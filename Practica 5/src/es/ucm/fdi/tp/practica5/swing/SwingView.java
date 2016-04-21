@@ -449,7 +449,6 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			ctrl.makeMove(manualPlayer);			
 		}
 		catch (Exception e){
-			
 		}
 	}
 	
@@ -593,6 +592,8 @@ public abstract class SwingView extends JFrame implements GameObserver {
 				storyArea.append("You have lost, try it again!\n");
 			}
 		}
+
+
 	}
 
 	public void onMoveStart(Board board, Piece turn) {
