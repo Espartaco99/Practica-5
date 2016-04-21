@@ -93,15 +93,12 @@ public class AtaxxMove extends GameMove {
 			if (p != null && !pieces.equals(p)){
 				if (rowDest >= 0 && rowDest < board.getRows() && colDest >= 0 && colDest < board.getCols() 
 						&& board.getPosition(rowDest, colDest) == null){
-					
-					int distanceRow = Math.abs(rowDest - rowOrigin);
-					int distanceCol = Math.abs(colDest - colOrigin);
 					int dist = Math.max(Math.abs(rowDest - rowOrigin), Math.abs(colDest - colOrigin));
 					//Muevo 1 casilla la ficha
-					if (distanceRow <= 2 && distanceCol <= 2){
+					if (dist <= 2){
 						board.setPosition(rowDest, colDest, getPiece());
 						//Muevo 2 casillas la pieza y la elimino de su posicion original
-						if (distanceRow == 2 || distanceCol == 2){
+						if (dist == 2){
 							board.setPosition(rowOrigin, colOrigin, null);
 						}
 					

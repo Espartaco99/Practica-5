@@ -17,20 +17,20 @@ public class AdvancedTTTSwingPlayer extends Player {
 		private static final long serialVersionUID = 1L;
 		private int rowOrigin;
 		private int colOrigin;
-		private int rowDest;
-		private int colDest;
+		private int row;
+		private int col;
 
-		public void setMove(int rowOrigin, int colOrigin, int rowDest, int colDest) {
+		public void setMove(int rowOrigin, int colOrigin, int row, int col) {
 			this.rowOrigin = rowOrigin;
 			this.colOrigin = colOrigin;
-			this.rowDest = rowDest;
-			this.colDest = colDest;
+			this.row = row;
+			this.col = col;
 		}
 
 		@Override
 		public GameMove requestMove(Piece p, Board board, List<Piece> pieces,
 				GameRules rules) {
-			GameMove move = new AdvancedTTTMove(rowOrigin,colOrigin,rowDest, colDest, p);
+			GameMove move = new AdvancedTTTMove(rowOrigin,colOrigin,row, col, p);
 			
 			return move;
 		}
