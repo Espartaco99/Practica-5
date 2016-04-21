@@ -24,8 +24,6 @@ public abstract class BoardComponent extends JComponent {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	//HAY QUE MIRAR extra en: Código para las practicas del segundo cuatrimestre
-	//Para la paleta de colores, mirar el paquete jcolor
 	public BoardComponent() {
 		initGUI();
 	}
@@ -60,11 +58,12 @@ public abstract class BoardComponent extends JComponent {
 			}
 
 			@Override
-			//HACER TODO EL MOVIMIENTO DE PIEZAS
 			public void mouseClicked(MouseEvent e) {
+				//Debug messages
 				System.out.println("Button" + e.getButton() + " Clicked at"
 						+ "(" + e.getX() + "," + e.getY() + ")");
 				System.out.println(e.getY()/  _CELL_HEIGHT + " " + e.getX() /  _CELL_WIDTH);
+				//The important call of the function
 				BoardComponent.this.mouseClicked(e.getY() / _CELL_HEIGHT, e.getX() / _CELL_WIDTH, e.getButton());
 			}
 		});

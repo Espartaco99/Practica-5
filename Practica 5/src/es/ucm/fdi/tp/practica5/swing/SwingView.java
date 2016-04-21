@@ -407,7 +407,9 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			restart.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (playerTypes.get(turn) == PlayerMode.MANUAL && (!buttonsDisabled || turn == null)){
+					//If the turn is manual and the button is not disabled or if the game is over 
+					//(turn = null in OnGameOver) we can restart
+					if ((playerTypes.get(turn) == PlayerMode.MANUAL && !buttonsDisabled) || turn == null){
 						activateBoard();
 						addMsg("Restarting the game\n");
 						ctrl.restart();
@@ -439,7 +441,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 			ctrl.makeMove(manualPlayer);			
 		}
 		catch (Exception e){
-			activateBoard();
+			//activateBoard();
 		}
 	}
 	
@@ -635,6 +637,7 @@ public abstract class SwingView extends JFrame implements GameObserver {
 		if (turn == localPiece || localPiece == null){
 			JFrame frame = new JFrame();
 			JOptionPane.showMessageDialog(frame, msg, "ERROR", JOptionPane.ERROR_MESSAGE);
+			addMsg(turn + " ");
 			activateBoard();
 		}					
 	}

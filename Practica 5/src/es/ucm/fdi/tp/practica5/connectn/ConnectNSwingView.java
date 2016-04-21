@@ -39,5 +39,4 @@ public class ConnectNSwingView extends RectBoardSwingView {
 		addMsg("Click on an empty cell\n");
 	}
 	
-
 }
